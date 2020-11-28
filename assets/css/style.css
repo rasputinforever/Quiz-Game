@@ -1,3 +1,15 @@
-body {
+#quiz-area {
+    height: 500px;
+    width: 500px;
+    color:black;
     background-color: lightblue;
+    font-size: large;
+}
+#quiz-question {
+    font-size: large;
+    background-color: lightcoral;
+}
+.quiz-answer {
+    font-size: medium;
+    background-color: coral;
 }
