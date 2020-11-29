@@ -12,7 +12,7 @@ var quizQuestions = [
     },
     {
         question: "Please click the second answer.",
-        choices: ["one", "two", "three", "four"],
+        choices: ["Dogs", "Cats", "Mice", "Peaches"],
         answer: 2
     },
     {
@@ -46,66 +46,109 @@ for (var i = 0; i < quizQuestions[0].choices.length; i++) {
     answerEl.textContent = quizQuestions[0].choices[i];    
 }
 
+var quizStatus = {
+    questionNum: 1,
+    questionAsked: false
+};
+
 
 document.getElementById("answer-1").addEventListener("click", startTimer);
-var questionNum = 1;
-var questionAsked = false;
+
+
 
 //quiz-game timer
 function startTimer(){
+    document.getElementById("answer-1").removeEventListener("click", startTimer);
     var counter = document.getElementById("timer").textContent;
     
-    if (!questionAsked) {
-        questionAsked = true;
-        newQuestion(questionNum);
+    
 
-      }
     document.getElementById("timer").style = "color: black;"
 
     setInterval(function() {
+            
+        counter--;
+        if (!quizStatus.questionAsked) {
+            quizStatus.questionAsked = true;
+            console.log("newQuestion Activated")
+            document.getElementById("quiz-question").textContent = quizQuestions[quizStatus.questionNum].question;
+            for (var i = 0; i < 4; i++) {
+                var answerEl = document.getElementById("answer-" + (i + 1));
+                answerEl.textContent = quizQuestions[quizStatus.questionNum].choices[i];
+                
+                if ((i + 1) === quizQuestions[quizStatus.questionNum].answer) {
+                    answerEl.addEventListener('click', function() {
+                    console.log("Right!")
+                    quizStatus.questionNum++;
+                    quizStatus.questionAsked = false;
+                });
+                } else {
+                    answerEl.addEventListener('click', function() {
+                    console.log("Wrong!")
+                    quizStatus.questionNum++;
+                    quizStatus.questionAsked = false;
+                    });
+                }  
+                };
+        }
+        if (counter >= 0) {
+            span = document.getElementById("timer");
+            span.innerHTML = counter;
+        } else if (counter === 0) {
+            document.getElementById("timer").textContent = 'Game Over!';
+            clearInterval(counter);
+        } 
         
-      counter--;
-      if (counter >= 0) {
-        span = document.getElementById("timer");
-        span.innerHTML = counter;
-      } else if (counter === 0) {
-        document.getElementById("timer").textContent = 'Game Over!';
-          clearInterval(counter);
-      } 
-      
-      
-    }, 1000);
-  };
+        
+        
+        }, 1000);
+
+
+
+};
 
 //question asker-er
-function newQuestion(questionNum) {
-    document.getElementById("quiz-question").textContent = quizQuestions[questionNum].question;
+function newQuestion(quizStatus) {
+    console.log("newQuestion Activated")
+    
+    document.getElementById("quiz-question").textContent = quizQuestions[quizStatus.questionNum].question;
     for (var i = 0; i < 4; i++) {
         var answerEl = document.getElementById("answer-" + (i + 1));
-        answerEl.textContent = quizQuestions[questionNum].choices[i];
-        if ((i + 1) === quizQuestions[questionNum].answer) {
-            answerEl.addEventListener('click', correctAnswer);
+        answerEl.textContent = quizQuestions[quizStatus.questionNum].choices[i];
+        if ((i + 1) === quizQuestions[quizStatus.questionNum].answer) {
+            answerEl.addEventListener('click', function(quizStatus) {
+                console.log("Right!")
+                quizStatus.questionNum++;
+                quizStatus.questionAsked = false;
+                                
+                return quizStatus;
+            });
         } else {
-            answerEl.addEventListener('click', wrongAnswer);
-        }  
-          
+            answerEl.addEventListener('click', function(quizStatus) {
+                console.log("Wrong!")
+                quizStatus.questionNum++;
+                quizStatus.questionAsked = false;                
+                return quizStatus;
+        });
+    }  
     };
-    return questionNum;
-}
+    
+};
 
 //wrong answer
-function wrongAnswer() {
+function wrongAnswer(quizStatus) {
     console.log("Wrong!")
-    questionNum++;
-    questionAsked = false;
-    return questionNum;
+    quizStatus.questionNum++;
+    quizStatus.questionAsked = false;
+    
+    return quizStatus;
 }
 
-
 //correct answer
-function correctAnswer() {
+function correctAnswer(quizStatus) {
     console.log("Right!")
-    questionNum++;
-    questionAsked = false;
-    return questionNum;
+    quizStatus.questionNum++;
+    quizStatus.questionAsked = false;
+    
+    return quizStatus;
 }
