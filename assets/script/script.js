@@ -6,29 +6,29 @@ var quizQuestions = [
         answer: 1,
     },
     {
-        question: "Please click the second answer.",
-        choices: ["Banana", "Apple", "Persimon", "Turkey"],
-        answer: 2
-    },
-    {
-        question: "Please click the fourth answer.",
-        choices: ["one", "two", "three", "four"],
-        answer: 4
-    },
-    {
-        question: "Please click the fourth answer.",
-        choices: ["one", "two", "three", "four"],
-        answer: 4
-    },
-    {
-        question: "Please click the second answer.",
-        choices: ["one", "two", "three", "four"],
-        answer: 2
-    },
-    {
         question: "Please click the first answer.",
-        choices: ["one", "two", "three", "four"],
+        choices: ["Banana", "Apple", "Persimon", "Turkey"],
         answer: 1
+    },
+    {
+        question: "Please click the second answer.",
+        choices: ["one", "two", "three", "four"],
+        answer: 2
+    },
+    {
+        question: "Please click the third answer.",
+        choices: ["one", "two", "three", "four"],
+        answer: 3
+    },
+    {
+        question: "Please click the fourth answer.",
+        choices: ["one", "two", "three", "four"],
+        answer: 4
+    },
+    {
+        question: "Please click the last answer.",
+        choices: ["one", "two", "three", "four"],
+        answer: 4
     }
 ];
 
@@ -49,12 +49,17 @@ for (var i = 0; i < quizQuestions[0].choices.length; i++) {
 
 document.getElementById("answer-1").addEventListener("click", startTimer);
 var questionNum = 1;
+var questionAsked = false;
 
 //quiz-game timer
 function startTimer(){
     var counter = document.getElementById("timer").textContent;
-    newQuestion(questionNum);
     
+    if (!questionAsked) {
+        questionAsked = true;
+        newQuestion(questionNum);
+
+      }
     document.getElementById("timer").style = "color: black;"
 
     setInterval(function() {
@@ -63,16 +68,16 @@ function startTimer(){
       if (counter >= 0) {
         span = document.getElementById("timer");
         span.innerHTML = counter;
-      }
-      if (counter === 0) {
+      } else if (counter === 0) {
         document.getElementById("timer").textContent = 'Game Over!';
           clearInterval(counter);
-      }
+      } 
+      
       
     }, 1000);
   };
 
-  //question asker-er
+//question asker-er
 function newQuestion(questionNum) {
     document.getElementById("quiz-question").textContent = quizQuestions[questionNum].question;
     for (var i = 0; i < 4; i++) {
@@ -82,19 +87,25 @@ function newQuestion(questionNum) {
             answerEl.addEventListener('click', correctAnswer);
         } else {
             answerEl.addEventListener('click', wrongAnswer);
-        }        
+        }  
+          
     };
-    questionNum++;
     return questionNum;
 }
 
 //wrong answer
 function wrongAnswer() {
     console.log("Wrong!")
+    questionNum++;
+    questionAsked = false;
+    return questionNum;
 }
 
 
 //correct answer
 function correctAnswer() {
-    console.log("Correct!")
+    console.log("Right!")
+    questionNum++;
+    questionAsked = false;
+    return questionNum;
 }
