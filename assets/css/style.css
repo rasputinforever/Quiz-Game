@@ -5,11 +5,14 @@
     background-color: lightblue;
     font-size: large;
 }
-#quiz-question {
+quiz-question {
     font-size: large;
     background-color: lightcoral;
 }
 .quiz-answer {
     font-size: medium;
     background-color: coral;
+}
+#timer {
+    color: white;
 }
