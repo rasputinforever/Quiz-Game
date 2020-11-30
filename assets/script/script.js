@@ -55,12 +55,21 @@ var scoreHistory = {
     lastPlay: ['Dummy', 0]
 };
 
+//get item then check if null
 var localHistory = localStorage.getItem('scoreHistory');
-console.log(localHistory);
 
+//JSON Stringify to store un-set item, then get the item and un-stringify
 if (localHistory === null) {
-    console.log("no history!")
+    localHistory = JSON.stringify(scoreHistory);
+    localStorage.setItem('localHistory', localHistory);
+} else {
+    localHistory = localStorage.getItem('localHistory');    
 }
+
+localHistory = JSON.parse(localHistory);
+scoreHistory = localHistory;
+
+
 
 //set up page
     //set up play area
