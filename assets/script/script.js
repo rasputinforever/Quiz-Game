@@ -36,65 +36,114 @@ var quizQuestions = [
 var quizStatus = {
     questionNum: 1,
     questionAsked: false,
-    correctAnswer: 0
+    correctAnswer: 0,
+    gameLength: 60
 };
 
-console.log(quizStatus);
 
-//set up initial page
-var quizCanvas = document.getElementById("quiz-area");
-var quizQuestion = document.getElementById("quiz-question");
-quizQuestion.addEventListener("click", startTimer);
+//set up page
+
+//set up play area
+var quizCanvas = document.createElement("main");
+quizCanvas.id = "quiz-area";
+document.body.appendChild(quizCanvas);
+//"start game" added to play-area, will be killed at start of game
+quizCanvas.addEventListener("click", startTimer);
+
+//timer / score
+var timerCounter = document.createElement("h2");
+timerCounter.id = "timer";
+quizCanvas.appendChild(timerCounter);
+timerCounter.textContent = quizStatus.gameLength;
+
+
+//Questions are pasted here
+var quizQuestion = document.createElement("p");
+quizQuestion.id = "quiz-question";
+quizCanvas.appendChild(quizQuestion);
+//initial "intro" text
 quizQuestion.textContent = quizQuestions[0].question;
 
-
-
-//creates answer divs
+//creates answer p-tags
 for (var i = 0; i < quizQuestions[0].choices.length; i++) {
     var answerEl = document.createElement("p")
     answerEl.id = "answer-" + (i + 1);
     answerEl.className = "quiz-answer";
     quizCanvas.appendChild(answerEl);
     answerEl.textContent = quizQuestions[0].choices[i];
-    //answer checker
-    answerEl.addEventListener('click', function () {    
-        console.log("The correct answer was " + quizStatus.correctAnswer +"!")
-        quizStatus.questionNum++;
+
+    //answer checker function
+    answerEl.addEventListener('click', function (counter) {            
+        
+        if (parseInt(this.id.charAt(this.id.length - 1)) === quizStatus.correctAnswer) {
+            answerResult.textContent = "correct!";
+        } else {
+            answerResult.textContent = "wrong!";
+            timerCounter.textContent = timerCounter.textContent - 10;        
+        }
+
+        
+        //set to false, this triggers the next question to be asked
         quizStatus.questionAsked = false;
+        //update to next question
+        quizStatus.questionNum++;
+        quizStatus.correctAnswer = quizQuestions[quizStatus.questionNum].answer;
+
+        //quiz over condition
+
     });    
 }
 
-console.log(quizStatus);
+//creates status area
+var answerResult = document.createElement("p");
+answerResult.id = "answer-result";
+quizCanvas.appendChild(answerResult);
 
-//quiz-game timer
+
+//quiz-game starter
 function startTimer(){
 
-    document.getElementById("quiz-question").removeEventListener("click", startTimer);
+    //kill "start game"
+    quizCanvas.removeEventListener("click", startTimer);
 
-    var counter = document.getElementById("timer").textContent;
+    var counter = timerCounter.textContent;
+
     document.getElementById("timer").style = "color: black;"
 
     setInterval(function() {
-            
-        counter--;
-        console.log(quizStatus);
+        
+        //counter is both the time-left and eventual score.
+        counter = timerCounter.textContent;
 
+       
 
         //checks if the question-answers need to be refreshed to the next
         if (!quizStatus.questionAsked) {
+
+            //this loop updates the question, so first thing: set "asked" = true
             quizStatus.questionAsked = true;
-            console.log("newQuestion Activated")
-            var j = 0;
+
+            //update question
             quizQuestion.textContent = quizQuestions[quizStatus.questionNum].question;
 
+
+
+            //update answers, loop through array for each answer element
             for (var i = 0; i < 4; i++) {
                 var answerEl = document.getElementById("answer-" + (i + 1));
                 answerEl.textContent = quizQuestions[quizStatus.questionNum].choices[i];
             };
+
+            //
+            answerResult.textContent = "Answer Carefully...";
         }        
         
-        
+        //updates timer every tick
+        counter--;
+        timerCounter.textContent = counter;
 
+        //time-up event
+        
         }, 1000);
 };
 
