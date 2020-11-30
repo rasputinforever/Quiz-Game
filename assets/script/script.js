@@ -208,17 +208,14 @@ function startTimer(){
             //ask for player name, store that with score in local storage
             var playerName = prompt("Please enter your Name!")
 
-
-            //update play area to display high-scores
-                //interject player's high score if it falls within the top 5
-            
+            //update play area to display high-scores plus new high score if applicable            
             var newRecord = 0;
             //update answers to high scores
             for (var i = 0; i < 4; i++) {                
 
                 //check if new record
                 if (counter > scoreHistory[i][1] && newRecord < 1) {
-                    answerResult.textContent = "You got a new record!";   
+                    answerResult.textContent = "You got a new record! Click HERE to play again!";   
                     answerEl = document.getElementById("answer-" + (i + 1));                 
                     answerEl.textContent = quizQuestions[6].choices[i] + playerName + " " + counter;
                     newRecord++;
@@ -229,12 +226,10 @@ function startTimer(){
                 }
 
             }
-
-            //Say "You finished! Your Score is ___. Click HERE to play again!"
-
             //re-assign StartTimer to canvas
-
-};
+            quizCanvas.addEventListener("click", startTimer);
+            timerCounter.textContent = quizStatus.gameLength;
+        };
 
 
         
