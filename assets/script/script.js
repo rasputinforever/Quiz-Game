@@ -1,7 +1,7 @@
 //quiz questions and answers
 var quizQuestions = [
     {
-        question: "Welcome to the QUIZ SHOW! You will have 60 seconds to answer each question! Click HERE to start!",
+        question: "Welcome to the QUIZ SHOW! You will have 60 seconds to answer all the questions! Click on this text to begin!",
         choices: ["", "", "", ""],
         answer: 1,
     },
@@ -29,70 +29,104 @@ var quizQuestions = [
         question: "Please click the last answer.",
         choices: ["one", "two", "three", "four"],
         answer: 4
+    },
+    {
+        question: "You finished the Game!",
+        choices: ["1st Place: ", "Second Place: ", "Third Place: ", "Fourth Place: "],
+        answer: 0
     }
 ];
 
-//status keeper for QUIZ game
+//status keeper and rules for QUIZ game
 var quizStatus = {
     questionNum: 1,
     questionAsked: false,
     correctAnswer: 0,
-    gameLength: 60
+    gameLength: 1,
+    timerPunishment: 10
 };
 
+//default values if no local storage exists
+var scoreHistory = {
+    placeFirst: ['Erik', 50],
+    placeSecond: ['Justin', 45],
+    placeThird: ['Mishka', 40],
+    placeFourth: ['Rasputin' , 35],
+    lastPlay: ['Dummy', 0]
+};
+
+var localHistory = localStorage.getItem('scoreHistory');
+console.log(localHistory);
+
+if (localHistory === null) {
+    console.log("no history!")
+}
 
 //set up page
+    //set up play area
+    var quizCanvas = document.createElement("main");
+    quizCanvas.id = "quiz-area";
+    document.body.appendChild(quizCanvas);
+    //"start game" added to play-area, will be killed at start of game
+    quizCanvas.addEventListener("click", startTimer);
 
-//set up play area
-var quizCanvas = document.createElement("main");
-quizCanvas.id = "quiz-area";
-document.body.appendChild(quizCanvas);
-//"start game" added to play-area, will be killed at start of game
-quizCanvas.addEventListener("click", startTimer);
-
-//timer / score
-var timerCounter = document.createElement("h2");
-timerCounter.id = "timer";
-quizCanvas.appendChild(timerCounter);
-timerCounter.textContent = quizStatus.gameLength;
+    //timer / score
+    var timerCounter = document.createElement("h2");
+    timerCounter.id = "timer";
+    quizCanvas.appendChild(timerCounter);
+    timerCounter.textContent = quizStatus.gameLength;
 
 
-//Questions are pasted here
-var quizQuestion = document.createElement("p");
-quizQuestion.id = "quiz-question";
-quizCanvas.appendChild(quizQuestion);
-//initial "intro" text
-quizQuestion.textContent = quizQuestions[0].question;
+    //Questions are pasted here
+    var quizQuestion = document.createElement("p");
+    quizQuestion.id = "quiz-question";
+    quizCanvas.appendChild(quizQuestion);
+    //initial "intro" text
+    quizQuestion.textContent = quizQuestions[0].question;
 
-//creates answer p-tags
-for (var i = 0; i < quizQuestions[0].choices.length; i++) {
-    var answerEl = document.createElement("p")
-    answerEl.id = "answer-" + (i + 1);
-    answerEl.className = "quiz-answer";
-    quizCanvas.appendChild(answerEl);
-    answerEl.textContent = quizQuestions[0].choices[i];
+    //creates answer p-tags
+    for (var i = 0; i < quizQuestions[0].choices.length; i++) {
+        var answerEl = document.createElement("p")
+        answerEl.id = "answer-" + (i + 1);
+        answerEl.className = "quiz-answer";
+        quizCanvas.appendChild(answerEl);
+        answerEl.textContent = quizQuestions[0].choices[i];
 
-    //answer checker function
-    answerEl.addEventListener('click', function (counter) {            
-        
-        if (parseInt(this.id.charAt(this.id.length - 1)) === quizStatus.correctAnswer) {
-            answerResult.textContent = "correct!";
-        } else {
-            answerResult.textContent = "wrong!";
-            timerCounter.textContent = timerCounter.textContent - 10;        
-        }
+        //answer checker function
+        answerEl.addEventListener('click', function (counter) {            
+            
+            if (parseInt(this.id.charAt(this.id.length - 1)) === quizStatus.correctAnswer) {
+                answerResult.textContent = "correct!";
+            } else {
+                answerResult.textContent = "wrong!";
+                timerCounter.textContent = timerCounter.textContent - timerCounter.timerPunishment;        
+            }            
+            //set game status to false, this triggers the next question to be asked on next timer iteration
+            quizStatus.questionAsked = false;
+            //update to next question for next question
+            quizStatus.questionNum++;
+            quizStatus.correctAnswer = quizQuestions[quizStatus.questionNum].answer;
+            
+            //quiz over condition: if all questions answered, trigger "success" endgame. 
+            
+            //clearInterval(timerGame); << this is the function to stop the game
 
-        
-        //set to false, this triggers the next question to be asked
-        quizStatus.questionAsked = false;
-        //update to next question
-        quizStatus.questionNum++;
-        quizStatus.correctAnswer = quizQuestions[quizStatus.questionNum].answer;
+            //ask for player name, store that with score in local storage
+            
+            //update play area to display high-scores
+                //interject player's high score if it falls within the top 5
 
-        //quiz over condition
+            //
 
-    });    
-}
+            //Say "You finished! Your Score is ___. Click HERE to play again!"
+
+            //re-assign StartTimer to canvas
+
+
+
+
+        });    
+    }
 
 //creates status area
 var answerResult = document.createElement("p");
@@ -109,8 +143,10 @@ function startTimer(){
     var counter = timerCounter.textContent;
 
     document.getElementById("timer").style = "color: black;"
-
-    setInterval(function() {
+    
+    timerGame;
+    
+    var timerGame = setInterval(function() {
         
         //counter is both the time-left and eventual score.
         counter = timerCounter.textContent;
@@ -142,8 +178,28 @@ function startTimer(){
         counter--;
         timerCounter.textContent = counter;
 
-        //time-up event
+        //time-up event. If time ends, trigger "game over"
         
+        if (counter <= 0) {
+            console.log("game over!")
+            clearInterval(timerGame);
+
+            //update play area
+
+            //load any stored data
+
+            //say "sorry, try again"
+
+            //set the game status back to default
+
+            //re-add on the event listener to canvas
+
+
+
+
+        }
+
+
         }, 1000);
 };
 
