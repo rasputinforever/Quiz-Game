@@ -42,18 +42,18 @@ var quizStatus = {
     questionNum: 1,
     questionAsked: false,
     correctAnswer: 0,
-    gameLength: 1,
+    gameLength: 60,
     timerPunishment: 10
 };
 
 //default values if no local storage exists
-var scoreHistory = {
-    placeFirst: ['Erik', 50],
-    placeSecond: ['Justin', 45],
-    placeThird: ['Mishka', 40],
-    placeFourth: ['Rasputin' , 35],
-    lastPlay: ['Dummy', 0]
-};
+var scoreHistory = [
+    ['Erik', 50],
+    ['Justin', 45],
+    ['Mishka', 40],
+    ['Rasputin' , 35],
+    ['Dummy', 0]
+];
 
 //get item then check if null
 var localHistory = localStorage.getItem('scoreHistory');
@@ -108,7 +108,7 @@ scoreHistory = localHistory;
                 answerResult.textContent = "correct!";
             } else {
                 answerResult.textContent = "wrong!";
-                timerCounter.textContent = timerCounter.textContent - timerCounter.timerPunishment;        
+                timerCounter.textContent = timerCounter.textContent - quizStatus.timerPunishment;        
             }            
             //set game status to false, this triggers the next question to be asked on next timer iteration
             quizStatus.questionAsked = false;
@@ -116,22 +116,7 @@ scoreHistory = localHistory;
             quizStatus.questionNum++;
             quizStatus.correctAnswer = quizQuestions[quizStatus.questionNum].answer;
             
-            //quiz over condition: if all questions answered, trigger "success" endgame. 
             
-            //clearInterval(timerGame); << this is the function to stop the game
-
-            //ask for player name, store that with score in local storage
-            
-            //update play area to display high-scores
-                //interject player's high score if it falls within the top 5
-
-            //
-
-            //Say "You finished! Your Score is ___. Click HERE to play again!"
-
-            //re-assign StartTimer to canvas
-
-
 
 
         });    
@@ -157,6 +142,14 @@ function startTimer(){
     
     var timerGame = setInterval(function() {
         
+        
+
+
+
+
+
+
+
         //counter is both the time-left and eventual score.
         counter = timerCounter.textContent;
 
@@ -175,7 +168,7 @@ function startTimer(){
 
             //update answers, loop through array for each answer element
             for (var i = 0; i < 4; i++) {
-                var answerEl = document.getElementById("answer-" + (i + 1));
+                answerEl = document.getElementById("answer-" + (i + 1));
                 answerEl.textContent = quizQuestions[quizStatus.questionNum].choices[i];
             };
 
@@ -187,8 +180,7 @@ function startTimer(){
         counter--;
         timerCounter.textContent = counter;
 
-        //time-up event. If time ends, trigger "game over"
-        
+        //time-up event. If time ends, trigger "game over"        
         if (counter <= 0) {
             console.log("game over!")
             clearInterval(timerGame);
@@ -202,11 +194,51 @@ function startTimer(){
             //set the game status back to default
 
             //re-add on the event listener to canvas
-
-
-
-
         }
+
+        //quiz over condition: if all questions answered, trigger "success" endgame. counter must be > 0 to "win". 
+        if (quizStatus.questionNum > 1) {
+            //stops timer
+            clearInterval(timerGame);
+
+            //update status
+            quizQuestion.textContent = quizQuestions[6].question;
+            answerResult.textContent = "The game is over! Click HERE to try again!";
+
+            //ask for player name, store that with score in local storage
+            var playerName = prompt("Please enter your Name!")
+
+
+            //update play area to display high-scores
+                //interject player's high score if it falls within the top 5
+            
+            var newRecord = 0;
+            //update answers to high scores
+            for (var i = 0; i < 4; i++) {                
+
+                //check if new record
+                if (counter > scoreHistory[i][1] && newRecord < 1) {
+                    answerResult.textContent = "You got a new record!";   
+                    answerEl = document.getElementById("answer-" + (i + 1));                 
+                    answerEl.textContent = quizQuestions[6].choices[i] + playerName + " " + counter;
+                    newRecord++;
+                } else {
+                    answerEl = document.getElementById("answer-" + (i + 1));
+                    console.log(i - newRecord);
+                    answerEl.textContent = quizQuestions[6].choices[i] + scoreHistory[i - newRecord][0] + " " + scoreHistory[i - newRecord][1];
+                }
+
+            }
+
+            //Say "You finished! Your Score is ___. Click HERE to play again!"
+
+            //re-assign StartTimer to canvas
+
+};
+
+
+        
+        
 
 
         }, 1000);
