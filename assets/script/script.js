@@ -67,11 +67,7 @@ localHistory = JSON.parse(localStorage.getItem('localHistory'))
 
 
 var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
-console.log("Local History game start")
-console.log(JSON.stringify(localHistory));
 
-console.log("Old History game start")
-console.log(JSON.stringify(oldLocalhistory));
 
 
 //set up page
@@ -130,12 +126,7 @@ console.log(JSON.stringify(oldLocalhistory));
 //quiz-game script
 function startTimer(){
     
-    var x = 0;
-    console.log("Local History game start")
-    console.log(JSON.stringify(localHistory));
 
-    console.log("Old History game start")
-    console.log(JSON.stringify(oldLocalhistory));
 
     //kill "start game" from canvas
     quizCanvas.removeEventListener("click", startTimer);
@@ -177,7 +168,7 @@ function startTimer(){
         //time-up event. If time ends, trigger "game over" endgame.       
         if (counter < 1) {
             clearInterval(timerGame);
-            console.log("Game End, Lose : " + JSON.parse(localStorage.getItem('localHistory')));
+
             //update play area
             quizQuestion.textContent = "You're out of time!"
             answerResult.textContent = "Click HERE to try again!";
@@ -204,8 +195,6 @@ function startTimer(){
             //stops timer
 
         
-            console.log("Old History game end")
-            console.log(JSON.stringify(oldLocalhistory));
 
             clearInterval(timerGame);
 
@@ -223,8 +212,7 @@ function startTimer(){
             
             //update answers to high scores
             for (var i = 0; i < 4; i++) {   
-                x = x + 1
-                console.log(x);             
+                           
                 //check if new record
                 if (counter > localHistory[i][1] && newRecord === 0) {
                     var playerName = prompt("You got a high score! Please enter your name:")
@@ -242,22 +230,14 @@ function startTimer(){
                     localHistory[i][0] = oldLocalhistory[i - newRecord][0];
                     localHistory[i][1] = oldLocalhistory[i - newRecord][1];
                 }
-                // console.log("Local History in loop")
-                // console.log(localHistory);
-            
-                console.log("Old History game in loop")
-                console.log(JSON.stringify(oldLocalhistory));
+
             }
             //save local storage high scores
             
             localStorage.setItem('localHistory', JSON.stringify(localHistory));
 
 
-            console.log("Local History game start")
-            console.log(JSON.stringify(localHistory));
-        
-            console.log("Old History game start")
-            console.log(JSON.stringify(oldLocalhistory));
+
 
 
             //re-assign StartTimer to canvas, reset defaults
