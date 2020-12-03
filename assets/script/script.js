@@ -110,9 +110,10 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
         answerEl.addEventListener('click', function () {            
             
             if (parseInt(this.id.charAt(this.id.length - 1)) === quizStatus.correctAnswer) {
-                
+                this.className = "quiz-answer quiz-answer-correct";
                 answerResult.textContent = "Last Question: Correct!";
             } else {
+                this.className = "quiz-answer quiz-answer-wrong";
                 answerResult.textContent = "Last Question: Wrong!";
                 timerCounter.textContent = timerCounter.textContent - quizStatus.timerPunishment;        
             }            
@@ -137,6 +138,9 @@ function startTimer(){
 
     //kill "start game" from canvas
     quizCanvas.removeEventListener("click", startTimer);
+    
+    //kill "show high scores"
+
     //set counter to start time
     timerCounter.textContent = quizStatus.gameLength;
     var counter = timerCounter.textContent;
@@ -166,6 +170,7 @@ function startTimer(){
             for (var i = 0; i < 4; i++) {
                 answerEl = document.getElementById("answer-" + (i + 1));
                 answerEl.textContent = quizQuestions[quizStatus.questionNum].choices[i];
+                answerEl.className = "quiz-answer";
             };
         }        
         
@@ -230,6 +235,7 @@ function startTimer(){
                         //logging new record into localHistory
                         localHistory[i][0] = playerName;
                         localHistory[i][1] = counter;
+                        answerEl.className = "quiz-answer quiz-answer-highscore";
 
                     } else {
                         //oldLocalhistory used as "memory" as localHistory gets overwritten in if script

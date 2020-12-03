@@ -42,4 +42,18 @@ body {
     text-align: center;
     width: 80%;
     margin-left: 10%;
+    box-shadow: 5px 5px 5px black;
+}
+.quiz-answer-correct {
+    box-shadow: 5px 5px 5px rgb(9, 255, 0);
+    color: rgb(9, 255, 0);
+}
+.quiz-answer-wrong {
+    box-shadow: 5px 5px 5px rgb(255, 0, 0);
+    color: rgb(255, 0, 0);
+}
+.quiz-answer-highscore {
+    box-shadow: 5px 5px 5px rgb(255, 0, 221);
+    color: white;
+    background-color: red;
 }
