@@ -27,7 +27,7 @@ var quizQuestions = [
     },
     {
         question: "Which of the following terms is a synonym of \"Gaussian\" in \"Gaussian Distribution\"?",
-        choices: ["precise", "random", "homogenous", "normal"],
+        choices: ["Precise", "Random", "Homogenous", "Normal"],
         answer: 4
     },
     {
@@ -43,7 +43,8 @@ var quizStatus = {
     questionAsked: false,
     correctAnswer: 1,
     gameLength: 60,
-    timerPunishment: 10
+    timerPunishment: 10,
+    preGametimer: 3
 };
 
 
@@ -84,7 +85,7 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
     quizCanvas.id = "quiz-area";
     document.body.appendChild(quizCanvas);
     //"start game" added to play-area, will be killed at start of game, re-applied at end of game
-    quizCanvas.addEventListener("click", startTimer);
+    quizCanvas.addEventListener("click", preGame);
 
     //timer / score
     var timerCounter = document.createElement("h2");
@@ -131,32 +132,54 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
     quizCanvas.appendChild(answerResult);
     answerResult.style.textAlign = "center";
     answerResult.style.fontSize = "40px";
-    answerResult.textContent = "You will have 60 seconds to complete the quiz. To begin, click on this text!";
+    answerResult.textContent = "Click HERE to start!";
 
-//quiz-game script defined here
-function startTimer(){
-
-    //kill "start game" from canvas
-    quizCanvas.removeEventListener("click", startTimer);
+function preGame() {
     
-    //kill "show high scores"
-
-    //set counter to start time
-    timerCounter.textContent = quizStatus.gameLength;
-    var counter = timerCounter.textContent;
+    answerResult.textContent = "The game will begin...";
+    timerCounter.textContent = quizStatus.preGametimer;
+    
     //reveal counter
     document.getElementById("timer").style = "color: black;"    
     
+    var preGame = setInterval(function() {
+        quizStatus.preGametimer--;
+        timerCounter.textContent = quizStatus.preGametimer;
+        if (quizStatus.preGametimer === 1) {
+            answerResult.textContent = "Now!";  
+        } else if (quizStatus.preGametimer === 0) {
+            clearInterval(preGame);        
+            startTimer();
+        } 
+        
+    }, 1000);
+};
 
+//quiz-game script defined here
+function startTimer(){
+    //set counter to start time main game
+    
+    quizCanvas.removeEventListener("click", preGame);
+    timerCounter.textContent = quizStatus.gameLength;
+    var counter = timerCounter.textContent;
+    
+    //reveal counter
+    document.getElementById("timer").style = "color: black;" 
+
+    answerResult.textContent = "";
+    
+
+    //styling for alert
     answerResult.style.textAlign = "right";
     answerResult.style.fontSize = "20px";
     answerResult.textContent = "";
+  
 
     //this helps the game run and makes it able to STOP later... it had to be assigned to a function to do that. Hey, I don't ask questions, just trust me on this one.
     timerGame;
     //the active game is an interval, at each tick it checks game status to update itself or if the game is over. 
     var timerGame = setInterval(function() {
-
+        
         //counter is both the time-left and eventual score. By taking from DOM each interval it was possible to use the DOM value in the functions when time is penalized. Essentially creates a linear path for this value rather than having concurrent values. I think that's what's happening, it seems to work.
         counter = timerCounter.textContent;
 
@@ -197,13 +220,14 @@ function startTimer(){
                 }
 
                 //set the game status back to default for next play
-                quizCanvas.addEventListener("click", startTimer);            
+                quizCanvas.addEventListener("click", preGame);            
                 quizStatus = {
                     questionNum: 1,
                     questionAsked: false,
                     correctAnswer: 1,
                     gameLength: 60,
-                    timerPunishment: 10
+                    timerPunishment: 10,
+                    preGametimer: 3
                 };
             }
 
@@ -250,13 +274,14 @@ function startTimer(){
                 localStorage.setItem('localHistory', JSON.stringify(localHistory));
 
                 //re-assign StartTimer to canvas, reset defaults for next play
-                quizCanvas.addEventListener("click", startTimer);
+                quizCanvas.addEventListener("click", preGame);
                 quizStatus = {
                     questionNum: 1,
                     questionAsked: false,
                     correctAnswer: 1,
                     gameLength: 60,
-                    timerPunishment: 10
+                    timerPunishment: 10,
+                    preGametimer: 3
                 };
             };
     }, 1000);
