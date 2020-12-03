@@ -3,36 +3,36 @@ var quizQuestions = [
     {
         question: "Welcome to the QUIZ SHOW! You will have 60 seconds to answer all the questions! Click on this text to begin!",
         choices: ["", "", "", ""],
-        answer: 1,
-    },
-    {
-        question: "Please click the first answer.",
-        choices: ["Banana", "Apple", "Persimon", "Turkey"],
         answer: 1
     },
     {
-        question: "Please click the second answer.",
-        choices: ["Dogs", "Cats", "Mice", "Peaches"],
+        question: "Which of the following is a pesticide?",
+        choices: ["Piperonyl Butoxide", "Zinc", "Hexane", "Mitragynine"],
+        answer: 1
+    },
+    {
+        question: "Which of the following hydrocarbons contains seven carbon atoms?",
+        choices: ["Propane", "n-Heptane", "Ethane", "Octane"],
         answer: 2
     },
     {
-        question: "Please click the third answer.",
-        choices: ["one", "two", "three", "four"],
-        answer: 3
+        question: "Which of the following is the object that spreads a mixture prior to detection?",
+        choices: ["inlet", "column", "quadrapole", "pump"],
+        answer: 2
     },
     {
-        question: "Please click the fourth answer.",
-        choices: ["one", "two", "three", "four"],
+        question: "What type of re=work would be used to re-analyze a result which exceeds the calibration curve?",
+        choices: ["re-sampling", "re-injection", "re-extraction", "re-dilution"],
         answer: 4
     },
     {
-        question: "Please click the last answer.",
-        choices: ["one", "two", "three", "four"],
+        question: "Which of the following terms is a synonym of Gaussian distribution?",
+        choices: ["precise", "random", "homogenous", "normal"],
         answer: 4
     },
     {
         question: "You finished the Game!",
-        choices: ["1st Place: ", "Second Place: ", "Third Place: ", "Fourth Place: "],
+        choices: ["High Score: ", "Second Place: ", "Third Place: ", "Fourth Place: "],
         answer: 0
     }
 ];
@@ -41,34 +41,34 @@ var quizQuestions = [
 var quizStatus = {
     questionNum: 1,
     questionAsked: false,
-    correctAnswer: 0,
-    gameLength: 5,
+    correctAnswer: 1,
+    gameLength: 60,
     timerPunishment: 10
 };
 
-//default values if no local storage exists
-var scoreHistory = [
-    ['Erik', 50],
-    ['Justin', 45],
-    ['Mishka', 40],
-    ['Rasputin' , 35],
-    ['Dummy', 0]
-];
+console.log(JSON.parse(localStorage.getItem('localHistory')));
 
 //get item then check if null
-var localHistory = localStorage.getItem('scoreHistory');
+var localHistory = JSON.parse(localStorage.getItem('localHistory'))
 
 //JSON Stringify to store un-set item, then get the item and un-stringify
 if (localHistory === null) {
-    localHistory = JSON.stringify(scoreHistory);
-    localStorage.setItem('localHistory', localHistory);
-} else {
-    localHistory = localStorage.getItem('localHistory');    
-}
+    //default values if no local storage exists
+    var scoreHistory = [
+        ['Erik', 50],
+        ['Justin', 45],
+        ['Mishka', 40],
+        ['Rasputin' , 35],
+        ['Dummy', 0]
+    ];
+    localStorage.setItem('localHistory', JSON.stringify(scoreHistory));    
+} 
 
-localHistory = JSON.parse(localHistory);
-scoreHistory = localHistory;
+localHistory = JSON.parse(localStorage.getItem('localHistory'))
+console.log(localHistory);
 
+var oldLocalhistory = localHistory;
+console.log(oldLocalhistory);
 
 
 //set up page
@@ -83,7 +83,6 @@ scoreHistory = localHistory;
     var timerCounter = document.createElement("h2");
     timerCounter.id = "timer";
     quizCanvas.appendChild(timerCounter);
-    timerCounter.textContent = quizStatus.gameLength;
 
 
     //Questions are pasted here
@@ -102,12 +101,13 @@ scoreHistory = localHistory;
         answerEl.textContent = quizQuestions[0].choices[i];
 
         //answer checker function
-        answerEl.addEventListener('click', function (counter) {            
+        answerEl.addEventListener('click', function () {            
             
             if (parseInt(this.id.charAt(this.id.length - 1)) === quizStatus.correctAnswer) {
-                answerResult.textContent = "Correct!";
+                
+                answerResult.textContent = "Last Question: Correct!";
             } else {
-                answerResult.textContent = "Wrong!";
+                answerResult.textContent = "Last Question: Wrong!";
                 timerCounter.textContent = timerCounter.textContent - quizStatus.timerPunishment;        
             }            
             //set game status to false, this triggers the next question to be asked on next timer iteration
@@ -115,10 +115,6 @@ scoreHistory = localHistory;
             //update to next question for next question
             quizStatus.questionNum++;
             quizStatus.correctAnswer = quizQuestions[quizStatus.questionNum].answer;
-            
-            
-
-
         });    
     }
 
@@ -130,7 +126,7 @@ scoreHistory = localHistory;
 
 //quiz-game script
 function startTimer(){
-
+    console.log("Game Start : " + JSON.parse(localStorage.getItem('localHistory')));
     //kill "start game" from canvas
     quizCanvas.removeEventListener("click", startTimer);
     //set counter
@@ -160,7 +156,7 @@ function startTimer(){
                 answerEl.textContent = quizQuestions[quizStatus.questionNum].choices[i];
             };
             //status bar
-            answerResult.textContent = "";
+            
         }        
         
         //updates timer every tick
@@ -171,74 +167,88 @@ function startTimer(){
         //time-up event. If time ends, trigger "game over" endgame.       
         if (counter < 1) {
             clearInterval(timerGame);
-            
+            console.log("Game End, Lose : " + JSON.parse(localStorage.getItem('localHistory')));
             //update play area
             quizQuestion.textContent = "You're out of time!"
             answerResult.textContent = "Click HERE to try again!";
-
+            timerCounter.textContent = '';
             //load any stored data
             for (var i = 0; i < 4; i++) {                
                 answerEl = document.getElementById("answer-" + (i + 1));
-                answerEl.textContent = quizQuestions[6].choices[i] + scoreHistory[i][0] + " " + scoreHistory[i][1];
+                answerEl.textContent = quizQuestions[6].choices[i] + localHistory[i][0] + " " + localHistory[i][1];
             }
 
             //set the game status back to default
-            quizCanvas.addEventListener("click", startTimer);
-            
+            quizCanvas.addEventListener("click", startTimer);            
             quizStatus = {
                 questionNum: 1,
                 questionAsked: false,
-                correctAnswer: 0,
-                gameLength: 5,
+                correctAnswer: 1,
+                gameLength: 60,
                 timerPunishment: 10
             };
         }
 
         //quiz over condition: if all questions answered, trigger "success" endgame. counter must be > 0 to "win". 
-        if (quizStatus.questionNum > 1) {
+        if (quizStatus.questionNum > quizQuestions.length - 2) {
             //stops timer
             clearInterval(timerGame);
+
+            timerCounter.textContent = "Final Score: " + timerCounter.textContent;
 
             //update status
             quizQuestion.textContent = quizQuestions[6].question;
             answerResult.textContent = "The game is over! Click HERE to try again!";
 
             //ask for player name, store that with score in local storage
-            var playerName = prompt("Please enter your Name!")
+            
 
             //update play area to display high-scores plus new high score if applicable            
             var newRecord = 0;
+
+            
+
+            
+            console.log("Game End, Win : " + JSON.parse(localStorage.getItem('localHistory')));
+
+
             //update answers to high scores
             for (var i = 0; i < 4; i++) {                
-
                 //check if new record
-                if (counter > scoreHistory[i][1] && newRecord < 1) {
+                if (counter > localHistory[i][1] && newRecord === 0) {
+                    var playerName = prompt("You got a high score! Please enter your name:")
                     answerResult.textContent = "You got a new record! Click HERE to play again!";   
                     answerEl = document.getElementById("answer-" + (i + 1));                 
                     answerEl.textContent = quizQuestions[6].choices[i] + playerName + " " + counter;
                     newRecord++;
+
+                    localHistory[i][0] = playerName;
+                    localHistory[i][1] = counter;
+
                 } else {
                     answerEl = document.getElementById("answer-" + (i + 1));
-                    answerEl.textContent = quizQuestions[6].choices[i] + scoreHistory[i - newRecord][0] + " " + scoreHistory[i - newRecord][1];
+                    answerEl.textContent = quizQuestions[6].choices[i] + localHistory[i - newRecord][0] + " " + localHistory[i - newRecord][1];
+                    localHistory[i][0] = oldLocalhistory[i - newRecord][0];
+                    localHistory[i][1] = oldLocalhistory[i - newRecord][1];
+                    console.log(oldLocalhistory);
                 }
-
             }
+            //save local storage high scores
+            
+            localStorage.setItem('localHistory', JSON.stringify(localHistory));
+            localHistory = JSON.parse(localStorage.getItem('localHistory')); 
+            console.log("Game End, After New Rec : " + JSON.parse(localStorage.getItem('localHistory')));
+
             //re-assign StartTimer to canvas, reset defaults
             quizCanvas.addEventListener("click", startTimer);
             quizStatus = {
                 questionNum: 1,
                 questionAsked: false,
-                correctAnswer: 0,
-                gameLength: 5,
+                correctAnswer: 1,
+                gameLength: 60,
                 timerPunishment: 10
             };
         };
-
-
-        
-        
-
-
         }, 1000);
 };
 
