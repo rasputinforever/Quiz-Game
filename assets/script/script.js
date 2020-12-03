@@ -238,7 +238,7 @@ function startTimer(){
 
                 } else {
                     answerEl = document.getElementById("answer-" + (i + 1));
-                    answerEl.textContent = quizQuestions[6].choices[i] + localHistory[i - newRecord][0] + " " + localHistory[i - newRecord][1];
+                    answerEl.textContent = quizQuestions[6].choices[i] + oldLocalhistory[i - newRecord][0] + " " + oldLocalhistory[i - newRecord][1];
                     localHistory[i][0] = oldLocalhistory[i - newRecord][0];
                     localHistory[i][1] = oldLocalhistory[i - newRecord][1];
                 }
