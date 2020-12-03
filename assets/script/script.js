@@ -1,7 +1,7 @@
 //quiz questions and answers
 var quizQuestions = [
     {
-        question: "Welcome to the QUIZ SHOW! You will have 60 seconds to answer all the questions! Click on this text to begin!",
+        question: "Welcome to the QUIZ SHOW!",
         choices: ["", "", "", ""],
         answer: 1
     },
@@ -128,7 +128,9 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
     var answerResult = document.createElement("p");
     answerResult.id = "answer-result";
     quizCanvas.appendChild(answerResult);
-
+    answerResult.style.textAlign = "center";
+    answerResult.style.fontSize = "40px";
+    answerResult.textContent = "You will have 60 seconds to complete the quiz. To begin, click on this text!";
 
 //quiz-game script defined here
 function startTimer(){
@@ -141,6 +143,11 @@ function startTimer(){
     //reveal counter
     document.getElementById("timer").style = "color: black;"    
     
+
+    answerResult.style.textAlign = "right";
+    answerResult.style.fontSize = "20px";
+    answerResult.textContent = "";
+
     //this helps the game run and makes it able to STOP later... it had to be assigned to a function to do that. Hey, I don't ask questions, just trust me on this one.
     timerGame;
     //the active game is an interval, at each tick it checks game status to update itself or if the game is over. 
@@ -174,6 +181,8 @@ function startTimer(){
 
                 //update play area to show high scores and sad alerts
                 quizQuestion.textContent = "You're out of time!"
+                answerResult.style.textAlign = "center";
+                answerResult.style.fontSize = "40px";
                 answerResult.textContent = "Click HERE to try again!";
                 timerCounter.textContent = '';
                 //load any stored data
@@ -202,6 +211,8 @@ function startTimer(){
                 //update status to show previous high-scores in next steps
                 quizQuestion.textContent = quizQuestions[6].question;
                 //game status alert update
+                answerResult.style.textAlign = "center";
+                answerResult.style.fontSize = "40px";
                 answerResult.textContent = "The game is over! Click HERE to try again!";
                 //this function is a little helper that allows the loop to account for a new high score. By referencing the localHistory and oldLocalhistory it can display the new records and log those records without deleting a record... if that makes sense. It also prevents the loop from creating duplicates of the high-record as a record > 3rd place would also be greater than 4th place, etc.
                 var newRecord = 0;                
@@ -245,6 +256,7 @@ function startTimer(){
     }, 1000);
 };
 
+//loops through and shows the current high scores
 function showHighscores() {
     for (var i = 0; i < 4; i++) {                
         answerEl = document.getElementById("answer-" + (i + 1));

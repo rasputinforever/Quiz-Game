@@ -21,6 +21,7 @@ body {
     margin: 0 auto;
     font-weight: bold;
     border-radius: 25px;
+    margin-top: 40px;
 }
 #timer {
     height: 30px;
@@ -40,7 +41,4 @@ body {
     text-align: center;
     width: 80%;
     margin-left: 10%;
-}
-#answer-result {
-    text-align: right;
 }
