@@ -138,7 +138,10 @@ function preGame() {
     
     answerResult.textContent = "The game will begin...";
     timerCounter.textContent = quizStatus.preGametimer;
-    
+    for (var i = 0; i < 4; i++) {                
+        answerEl = document.getElementById("answer-" + (i + 1));
+        answerEl.textContent = "";
+    }
     //reveal counter
     document.getElementById("timer").style = "color: black;"    
     
