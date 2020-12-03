@@ -6,7 +6,7 @@ var quizQuestions = [
         answer: 1
     },
     {
-        question: "Which of the following is a pesticide?",
+        question: "Which of the following compounds would be classified as a pesticide?",
         choices: ["Piperonyl Butoxide", "Zinc", "Hexane", "Mitragynine"],
         answer: 1
     },
@@ -16,17 +16,17 @@ var quizQuestions = [
         answer: 2
     },
     {
-        question: "Which of the following is the object that spreads a mixture prior to detection?",
-        choices: ["inlet", "column", "quadrapole", "pump"],
+        question: "Which of the following instrumentation elements creates spread in chromatography?",
+        choices: ["Needle", "Column", "Quadrapole", "Pump"],
         answer: 2
     },
     {
-        question: "What type of re=work would be used to re-analyze a result which exceeds the calibration curve?",
-        choices: ["re-sampling", "re-injection", "re-extraction", "re-dilution"],
+        question: "What type of re-work would be used to re-analyze a result which exceeds the calibration curve?",
+        choices: ["re-Sampling", "re-Injection", "re-Extraction", "re-Dilution"],
         answer: 4
     },
     {
-        question: "Which of the following terms is a synonym of Gaussian distribution?",
+        question: "Which of the following terms is a synonym of \"Gaussian\" in \"Gaussian Distribution\"?",
         choices: ["precise", "random", "homogenous", "normal"],
         answer: 4
     },
