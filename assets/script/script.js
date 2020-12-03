@@ -71,6 +71,13 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
 
 
 //on-load page set-up
+    //show-last-score button
+    var showLastscores = document.createElement("section")
+    showLastscores.id = "last-score-button";
+    document.body.appendChild(showLastscores);
+    showLastscores.innerText = "Click here to show High Scores"
+    showLastscores.addEventListener("click", showHighscores);
+
 
     //set up canvas where game is played
     var quizCanvas = document.createElement("main");
@@ -238,4 +245,9 @@ function startTimer(){
     }, 1000);
 };
 
-
+function showHighscores() {
+    for (var i = 0; i < 4; i++) {                
+        answerEl = document.getElementById("answer-" + (i + 1));
+        answerEl.textContent = quizQuestions[6].choices[i] + localHistory[i][0] + " " + localHistory[i][1];
+    }
+}
