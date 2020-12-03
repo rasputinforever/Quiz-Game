@@ -46,7 +46,6 @@ var quizStatus = {
     timerPunishment: 10
 };
 
-console.log(JSON.parse(localStorage.getItem('localHistory')));
 
 //get item then check if null
 var localHistory = JSON.parse(localStorage.getItem('localHistory'))
@@ -65,10 +64,14 @@ if (localHistory === null) {
 } 
 
 localHistory = JSON.parse(localStorage.getItem('localHistory'))
-console.log(localHistory);
 
-var oldLocalhistory = localHistory;
-console.log(oldLocalhistory);
+
+var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
+console.log("Local History game start")
+console.log(JSON.stringify(localHistory));
+
+console.log("Old History game start")
+console.log(JSON.stringify(oldLocalhistory));
 
 
 //set up page
@@ -126,7 +129,14 @@ console.log(oldLocalhistory);
 
 //quiz-game script
 function startTimer(){
-    console.log("Game Start : " + JSON.parse(localStorage.getItem('localHistory')));
+    
+    var x = 0;
+    console.log("Local History game start")
+    console.log(JSON.stringify(localHistory));
+
+    console.log("Old History game start")
+    console.log(JSON.stringify(oldLocalhistory));
+
     //kill "start game" from canvas
     quizCanvas.removeEventListener("click", startTimer);
     //set counter
@@ -192,6 +202,11 @@ function startTimer(){
         //quiz over condition: if all questions answered, trigger "success" endgame. counter must be > 0 to "win". 
         if (quizStatus.questionNum > quizQuestions.length - 2) {
             //stops timer
+
+        
+            console.log("Old History game end")
+            console.log(JSON.stringify(oldLocalhistory));
+
             clearInterval(timerGame);
 
             timerCounter.textContent = "Final Score: " + timerCounter.textContent;
@@ -205,15 +220,11 @@ function startTimer(){
 
             //update play area to display high-scores plus new high score if applicable            
             var newRecord = 0;
-
             
-
-            
-            console.log("Game End, Win : " + JSON.parse(localStorage.getItem('localHistory')));
-
-
             //update answers to high scores
-            for (var i = 0; i < 4; i++) {                
+            for (var i = 0; i < 4; i++) {   
+                x = x + 1
+                console.log(x);             
                 //check if new record
                 if (counter > localHistory[i][1] && newRecord === 0) {
                     var playerName = prompt("You got a high score! Please enter your name:")
@@ -230,14 +241,24 @@ function startTimer(){
                     answerEl.textContent = quizQuestions[6].choices[i] + localHistory[i - newRecord][0] + " " + localHistory[i - newRecord][1];
                     localHistory[i][0] = oldLocalhistory[i - newRecord][0];
                     localHistory[i][1] = oldLocalhistory[i - newRecord][1];
-                    console.log(oldLocalhistory);
                 }
+                // console.log("Local History in loop")
+                // console.log(localHistory);
+            
+                console.log("Old History game in loop")
+                console.log(JSON.stringify(oldLocalhistory));
             }
             //save local storage high scores
             
             localStorage.setItem('localHistory', JSON.stringify(localHistory));
-            localHistory = JSON.parse(localStorage.getItem('localHistory')); 
-            console.log("Game End, After New Rec : " + JSON.parse(localStorage.getItem('localHistory')));
+
+
+            console.log("Local History game start")
+            console.log(JSON.stringify(localHistory));
+        
+            console.log("Old History game start")
+            console.log(JSON.stringify(oldLocalhistory));
+
 
             //re-assign StartTimer to canvas, reset defaults
             quizCanvas.addEventListener("click", startTimer);
