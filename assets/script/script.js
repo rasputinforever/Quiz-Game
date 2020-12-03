@@ -1,7 +1,7 @@
 //quiz questions and answers
 var quizQuestions = [
     {
-        question: "Welcome to the QUIZ SHOW!",
+        question: "Welcome to the QUIZ GAME!",
         choices: ["", "", "", ""],
         answer: 1
     },
