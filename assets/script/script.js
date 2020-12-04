@@ -121,6 +121,10 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
 
 //pre-game count-down that shows the game-rules/concept to user.
 function preGame() {
+    
+    quizCanvas.removeEventListener("click", preGame);
+    
+    
     //shows user the game rules and sets the pre-game timer        
     answerResult.textContent = "You will have 60 seconds to answer all the questions in the quiz. The game will begin...";
     timerCounter.textContent = quizStatus.preGametimer;
@@ -131,13 +135,13 @@ function preGame() {
     }
     //reveal counter
     document.getElementById("timer").style = "color: black;"    
-    var preGame = setInterval(function() {
+    var preGamegame = setInterval(function() {
         quizStatus.preGametimer--;
         timerCounter.textContent = quizStatus.preGametimer;
         if (quizStatus.preGametimer === 1) {
             answerResult.textContent = "Now!";  
         } else if (quizStatus.preGametimer === 0) {
-            clearInterval(preGame);        
+            clearInterval(preGamegame);        
             startTimer();
         }    
     }, 1000);
@@ -146,8 +150,6 @@ function preGame() {
 //quiz-game script defined here
 function startTimer(){
     //set counter to start time main game
-    
-    quizCanvas.removeEventListener("click", preGame);
     timerCounter.textContent = quizStatus.gameLength;
 
     
@@ -168,8 +170,6 @@ function startTimer(){
     //the active game is an interval, at each tick it checks game status to update itself or if the game is over. 
     var timerGame = setInterval(function() {
         
-        //counter is both the time-left and eventual score. By taking from DOM each interval it was possible to use the DOM value in the functions when time is penalized. Essentially creates a linear path for this value rather than having concurrent values. I think that's what's happening, it seems to work.
-        counter = timerCounter.textContent;
         
         //this updates the question if the game-status is set to False (which occurs after user selects an answer)
         if (!quizStatus.questionAsked) {
