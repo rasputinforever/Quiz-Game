@@ -44,7 +44,7 @@ var quizStatus = {
     correctAnswer: 1,
     gameLength: 60,
     timerPunishment: 10,
-    preGametimer: 3
+    preGametimer: 5
 };
 
 
@@ -121,10 +121,8 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
 
 //pre-game count-down that shows the game-rules/concept to user.
 function preGame() {
-    
+    //removes event listener to avoid errors if user clicks again for some reason
     quizCanvas.removeEventListener("click", preGame);
-    
-    
     //shows user the game rules and sets the pre-game timer        
     answerResult.textContent = "You will have 60 seconds to answer all the questions in the quiz. The game will begin...";
     timerCounter.textContent = quizStatus.preGametimer;
@@ -135,55 +133,38 @@ function preGame() {
     }
     //reveal counter
     document.getElementById("timer").style = "color: black;"    
-    var preGamegame = setInterval(function() {
+    var preGamegame = setInterval(function() {        
         quizStatus.preGametimer--;
         timerCounter.textContent = quizStatus.preGametimer;
         if (quizStatus.preGametimer === 1) {
-            answerResult.textContent = "Now!";  
-        } else if (quizStatus.preGametimer === 0) {
+            answerResult.textContent = "Now!";            
+        }  else if (quizStatus.preGametimer < 1) {
             clearInterval(preGamegame);        
-            startTimer();
-        }    
+            //styling for alert
+            answerResult.textContent = "";
+            answerResult.style.textAlign = "right";
+            answerResult.style.fontSize = "20px";
+            answerResult.textContent = "";
+        
+
+            //this helps the game run and makes it able to STOP later... it had to be assigned to a function to do that. Hey, I don't ask questions, just trust me on this one.
+            
+            //set counter to start time main game
+            timerCounter.textContent = quizStatus.gameLength;
+            questionAsked()
+            mainGame(); 
+        }
     }, 1000);
 };
 
-//quiz-game script defined here
-function startTimer(){
-    //set counter to start time main game
-    timerCounter.textContent = quizStatus.gameLength;
-
-    
-    //reveal counter
-    document.getElementById("timer").style = "color: black;" 
-
-    answerResult.textContent = "";
-    
-
-    //styling for alert
-    answerResult.style.textAlign = "right";
-    answerResult.style.fontSize = "20px";
-    answerResult.textContent = "";
-  
-
-    //this helps the game run and makes it able to STOP later... it had to be assigned to a function to do that. Hey, I don't ask questions, just trust me on this one.
+function mainGame () {
     timerGame;
+
     //the active game is an interval, at each tick it checks game status to update itself or if the game is over. 
     var timerGame = setInterval(function() {
-        
-        
-        //this updates the question if the game-status is set to False (which occurs after user selects an answer)
-        if (!quizStatus.questionAsked) {
-            //this loop updates the question, so first thing: set "asked" = true, it's set to false when user clicks on answer
-            quizStatus.questionAsked = true;
-            //update question
-            quizQuestion.textContent = quizQuestions[quizStatus.questionNum].question;
-            //update answers, loop through array for each answer element. It's locked at 4 so this is not dynamic.
-            for (var i = 0; i < 4; i++) {
-                answerEl = document.getElementById("answer-" + (i + 1));
-                answerEl.textContent = quizQuestions[quizStatus.questionNum].choices[i];
-                answerEl.className = "quiz-answer";
-            };
-        }        
+         
+        questionAsked();
+              
         
         //updates timer every tick
         timerCounter.textContent--;
@@ -272,7 +253,23 @@ function startTimer(){
                 };
             };
     }, 1000);
-};
+}
+
+function questionAsked() {
+     //this updates the question if the game-status is set to False (which occurs after user selects an answer)
+     if (!quizStatus.questionAsked) {
+        //this loop updates the question, so first thing: set "asked" = true, it's set to false when user clicks on answer
+        quizStatus.questionAsked = true;
+        //update question
+        quizQuestion.textContent = quizQuestions[quizStatus.questionNum].question;
+        //update answers, loop through array for each answer element. It's locked at 4 so this is not dynamic.
+        for (var i = 0; i < 4; i++) {
+            answerEl = document.getElementById("answer-" + (i + 1));
+            answerEl.textContent = quizQuestions[quizStatus.questionNum].choices[i];
+            answerEl.className = "quiz-answer";
+        };
+    } 
+}
 
 //loops through and shows the current high scores
 function showHighscores() {
