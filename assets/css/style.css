@@ -22,7 +22,7 @@ body {
     font-weight: bold;
     border-radius: 25px;
     margin-top: 40px;
-    box-shadow: 5px 5px 5px black;
+    box-shadow: 15px 15px 25px black;
 }
 #timer {
     height: 30px;
