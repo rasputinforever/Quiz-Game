@@ -134,17 +134,19 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
     answerResult.style.fontSize = "40px";
     answerResult.textContent = "Click HERE to start!";
 
+
+//pre-game count-down that shows the game-rules/concept to user.
 function preGame() {
-    
-    answerResult.textContent = "The game will begin...";
+    //shows user the game rules and sets the pre-game timer        
+    answerResult.textContent = "You will have 60 seconds to answer all the questions in the quiz. The game will begin...";
     timerCounter.textContent = quizStatus.preGametimer;
+    //this triggers for the sake of a re-initiation of the game on the same page-load
     for (var i = 0; i < 4; i++) {                
         answerEl = document.getElementById("answer-" + (i + 1));
         answerEl.textContent = "";
     }
     //reveal counter
     document.getElementById("timer").style = "color: black;"    
-    
     var preGame = setInterval(function() {
         quizStatus.preGametimer--;
         timerCounter.textContent = quizStatus.preGametimer;
@@ -153,8 +155,7 @@ function preGame() {
         } else if (quizStatus.preGametimer === 0) {
             clearInterval(preGame);        
             startTimer();
-        } 
-        
+        }    
     }, 1000);
 };
 
@@ -185,7 +186,7 @@ function startTimer(){
         
         //counter is both the time-left and eventual score. By taking from DOM each interval it was possible to use the DOM value in the functions when time is penalized. Essentially creates a linear path for this value rather than having concurrent values. I think that's what's happening, it seems to work.
         counter = timerCounter.textContent;
-
+        
         //this updates the question if the game-status is set to False (which occurs after user selects an answer)
         if (!quizStatus.questionAsked) {
             //this loop updates the question, so first thing: set "asked" = true, it's set to false when user clicks on answer
