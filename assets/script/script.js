@@ -37,15 +37,14 @@ var quizQuestions = [
     }
 ];
 
+
+
 //status keeper and rules for QUIZ game
-var quizStatus = {
-    questionNum: 1,
-    questionAsked: false,
-    correctAnswer: 1,
-    gameLength: 60,
-    timerPunishment: 10,
-    preGametimer: 5
-};
+
+var quizStatus = {};
+
+resetQuizStatus();
+
 
 
 //get item then check if null
@@ -173,84 +172,9 @@ function mainGame () {
 
             //time-up event. If time ends (<1), trigger "game over" endgame.
             if (timerCounter.textContent < 1) {
-                clearInterval(timerGame);
-
-                //update play area to show high scores and sad alerts
-                quizQuestion.textContent = "You're out of time!"
-                answerResult.style.textAlign = "center";
-                answerResult.style.fontSize = "40px";
-                answerResult.textContent = "Click HERE to try again!";
-                timerCounter.textContent = '';
-                //load any stored data
-                for (var i = 0; i < 4; i++) {                
-                    answerEl = document.getElementById("answer-" + (i + 1));
-                    answerEl.textContent = quizQuestions[6].choices[i] + localHistory[i][0] + " " + localHistory[i][1];
-                }
-
-                //set the game status back to default for next play
-                quizCanvas.addEventListener("click", preGame);            
-                quizStatus = {
-                    questionNum: 1,
-                    questionAsked: false,
-                    correctAnswer: 1,
-                    gameLength: 60,
-                    timerPunishment: 10,
-                    preGametimer: 3
-                };
-            }
-
-            //quiz over condition: if all questions answered, trigger "success" endgame. counter must be > 0 to "win". 
-            if (quizStatus.questionNum > quizQuestions.length - 2) {
-                //stops timer
-                clearInterval(timerGame);
-                //show user their score
-                timerCounter.textContent = "Final Score: " + timerCounter.textContent;
-                //update status to show previous high-scores in next steps
-                quizQuestion.textContent = quizQuestions[6].question;
-                //game status alert update
-                answerResult.style.textAlign = "center";
-                answerResult.style.fontSize = "40px";
-                answerResult.textContent = "The game is over! Click HERE to try again!";
-                //this function is a little helper that allows the loop to account for a new high score. By referencing the localHistory and oldLocalhistory it can display the new records and log those records without deleting a record... if that makes sense. It also prevents the loop from creating duplicates of the high-record as a record > 3rd place would also be greater than 4th place, etc.
-                var newRecord = 0;                
-                //update answers to high scores and create new local history
-                for (var i = 0; i < 4; i++) {                               
-                    //check if new record
-                    if (timerCounter.textContent > localHistory[i][1] && newRecord === 0) {
-                        //only prompts when a high score happens. Nice work!
-                        var playerName = prompt("You got a high score! Please enter your name:")
-                        answerResult.textContent = "You got a new record! Click HERE to play again!";   
-                        answerEl = document.getElementById("answer-" + (i + 1));                 
-                        answerEl.textContent = quizQuestions[6].choices[i] + playerName + " " + timerCounter.textContent;
-                        //here's that checker to stop this path from happening twice
-                        newRecord++;
-                        //logging new record into localHistory
-                        localHistory[i][0] = playerName;
-                        localHistory[i][1] = timerCounter.textContent;
-                        answerEl.className = "quiz-answer quiz-answer-highscore";
-
-                    } else {
-                        //oldLocalhistory used as "memory" as localHistory gets overwritten in if script
-                        answerEl = document.getElementById("answer-" + (i + 1));
-                        answerEl.textContent = quizQuestions[6].choices[i] + oldLocalhistory[i - newRecord][0] + " " + oldLocalhistory[i - newRecord][1];
-                        localHistory[i][0] = oldLocalhistory[i - newRecord][0];
-                        localHistory[i][1] = oldLocalhistory[i - newRecord][1];
-                    }
-
-                }
-                //save to local storage high scores                
-                localStorage.setItem('localHistory', JSON.stringify(localHistory));
-
-                //re-assign StartTimer to canvas, reset defaults for next play
-                quizCanvas.addEventListener("click", preGame);
-                quizStatus = {
-                    questionNum: 1,
-                    questionAsked: false,
-                    correctAnswer: 1,
-                    gameLength: 60,
-                    timerPunishment: 10,
-                    preGametimer: 3
-                };
+                gameLose(timerGame);
+            } else if (quizStatus.questionNum > quizQuestions.length - 2) {
+                gameWin(timerGame);
             };
     }, 1000);
 }
@@ -271,6 +195,74 @@ function questionAsked() {
     } 
 }
 
+function gameLose(timerGame) {
+    //stops game
+    clearInterval(timerGame);
+
+    //update play area to show high scores and sad alerts
+    quizQuestion.textContent = "You're out of time!"
+    answerResult.style.textAlign = "center";
+    answerResult.style.fontSize = "40px";
+    answerResult.textContent = "Click HERE to try again!";
+    timerCounter.textContent = '';
+    //load any stored data
+    for (var i = 0; i < 4; i++) {                
+        answerEl = document.getElementById("answer-" + (i + 1));
+        answerEl.textContent = quizQuestions[6].choices[i] + localHistory[i][0] + " " + localHistory[i][1];
+    }
+    //set the game status back to default for next play
+    quizCanvas.addEventListener("click", preGame);            
+    resetQuizStatus();
+};
+
+//game success
+function gameWin(timerGame) {    
+
+    //stops timer
+    clearInterval(timerGame);
+    //show user their score
+    timerCounter.textContent = "Final Score: " + timerCounter.textContent;
+    //update status to show previous high-scores in next steps
+    quizQuestion.textContent = quizQuestions[6].question;
+    //game status alert update
+    answerResult.style.textAlign = "center";
+    answerResult.style.fontSize = "40px";
+    answerResult.textContent = "The game is over! Click HERE to try again!";
+    //this function is a little helper that allows the loop to account for a new high score. By referencing the localHistory and oldLocalhistory it can display the new records and log those records without deleting a record... if that makes sense. It also prevents the loop from creating duplicates of the high-record as a record > 3rd place would also be greater than 4th place, etc.
+    var newRecord = 0;                
+    //update answers to high scores and create new local history
+    for (var i = 0; i < 4; i++) {                               
+        //check if new record
+        if (timerCounter.textContent > localHistory[i][1] && newRecord === 0) {
+            //only prompts when a high score happens. Nice work!
+            var playerName = prompt("You got a high score! Please enter your name:")
+            answerResult.textContent = "You got a new record! Click HERE to play again!";   
+            answerEl = document.getElementById("answer-" + (i + 1));                 
+            answerEl.textContent = quizQuestions[6].choices[i] + playerName + " " + timerCounter.textContent;
+            //here's that checker to stop this path from happening twice
+            newRecord++;
+            //logging new record into localHistory
+            localHistory[i][0] = playerName;
+            localHistory[i][1] = timerCounter.textContent;
+            answerEl.className = "quiz-answer quiz-answer-highscore";
+
+        } else {
+            //oldLocalhistory used as "memory" as localHistory gets overwritten in if script
+            answerEl = document.getElementById("answer-" + (i + 1));
+            answerEl.textContent = quizQuestions[6].choices[i] + oldLocalhistory[i - newRecord][0] + " " + oldLocalhistory[i - newRecord][1];
+            localHistory[i][0] = oldLocalhistory[i - newRecord][0];
+            localHistory[i][1] = oldLocalhistory[i - newRecord][1];
+        }
+
+    }
+    //save to local storage high scores                
+    localStorage.setItem('localHistory', JSON.stringify(localHistory));
+
+    //re-assign StartTimer to canvas, reset defaults for next play
+    quizCanvas.addEventListener("click", preGame);
+    resetQuizStatus();
+};
+
 //loops through and shows the current high scores
 function showHighscores() {
     for (var i = 0; i < 4; i++) {                
@@ -279,6 +271,19 @@ function showHighscores() {
     }
 }
 
+//default settings reset
+function resetQuizStatus() {
+    quizStatus =  {
+    questionNum: 1,
+    questionAsked: false,
+    correctAnswer: 1,
+    gameLength: 60,
+    timerPunishment: 10,
+    preGametimer: 5
+    }
+};
+
+//checks if clicked answer is correct then sets up mainGame for next question
 function answerClick () {
     if (parseInt(this.id.charAt(this.id.length - 1)) === quizStatus.correctAnswer) {
         this.className = "quiz-answer quiz-answer-correct";
@@ -287,10 +292,9 @@ function answerClick () {
         this.className = "quiz-answer quiz-answer-wrong";
         answerResult.textContent = "Last Question: Wrong!";
         timerCounter.textContent = timerCounter.textContent - quizStatus.timerPunishment;        
-    }            
-    //set game status to false, this triggers the next question to be asked on next timer iteration
-    quizStatus.questionAsked = false;
+    }    
     //update game status to next question for next iteration
+    quizStatus.questionAsked = false;
     quizStatus.questionNum++;
     quizStatus.correctAnswer = quizQuestions[quizStatus.questionNum].answer;
 }
