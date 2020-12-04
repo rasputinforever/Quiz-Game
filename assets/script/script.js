@@ -253,8 +253,7 @@ function gameWin() {
     console.log(userNameenter.value);
     quizStatus.enteredName = userNameenter.value;
 
-    //show user their score
-    timerCounter.textContent = quizStatus.enteredName + "'s Final Score: " + timerCounter.textContent;
+
     //update status to show previous high-scores in next steps
     quizQuestion.textContent = quizQuestions[6].question;
     //game status alert update
@@ -268,7 +267,7 @@ function gameWin() {
         //check if new record
         if (timerCounter.textContent > localHistory[i][1] && newRecord === 0) {
             //only prompts when a high score happens. Nice work!
-            answerResult.textContent = "You got a new record! Click HERE to play again!";   
+            answerResult.textContent = "You got a new record!";   
             answerEl = document.getElementById("answer-" + (i + 1));                 
             answerEl.textContent = quizQuestions[6].choices[i] + quizStatus.enteredName + " " + timerCounter.textContent;
             //here's that checker to stop this path from happening twice
@@ -287,13 +286,15 @@ function gameWin() {
         }
 
     }
+        //show user their score
+        timerCounter.textContent = quizStatus.enteredName + "'s Final Score: " + timerCounter.textContent;
     //save to local storage high scores                
     localStorage.setItem('localHistory', JSON.stringify(localHistory));
 
     resetQuizStatus();
 
     // //re-assign StartTimer to canvas, reset defaults for next play
-     quizCanvas.addEventListener("click", preGame);
+     // quizCanvas.addEventListener("click", preGame);
 
 };
 
