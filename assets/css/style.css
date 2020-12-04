@@ -58,21 +58,32 @@ body {
     background-color: red;
 }
 #user-name-button {
-    visibility: hidden;    
-    height: 40px;
-    right: 20%;
+    visibility: hidden;   
+    width: 300px; 
+    height: 50px;
+    right: 10%;
     bottom: 20px;
     font-size: 24px;
     background-color: lightcoral;    
     font-weight: bold;
     position: absolute;
 }
-#user-name-form {
-    width: 200px;
-    height: 40px;
-    visibility: hidden;
-    left: 20%;
+#user-name-form {    
+    visibility: hidden; 
+    width: 300px;
+    height: 50px;
+    left: 10%;
     bottom: 20px;
+    background-color: lightcoral; 
+    position: absolute;
+}
+#user-name-text {
+    width: 95%;
+    text-align: center;
+    margin: auto;
+    height: 35px;
+    bottom: 6px;
+    left: 5px;
     font-size: 24px;
     background-color: white;    
     font-weight: bold;    

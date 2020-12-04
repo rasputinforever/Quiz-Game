@@ -68,8 +68,6 @@ localHistory = JSON.parse(localStorage.getItem('localHistory'))
 //a copy used as reference when creating a new high-score table
 var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
 
-
-
 //on-load page set-up
     //show-last-score button
     var showLastscores = document.createElement("section")
@@ -122,6 +120,7 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
     userNameform.id = "user-name-form";
     quizCanvas.appendChild(userNameform);  
     var userNameenter = document.createElement("INPUT");
+    userNameenter.id = "user-name-text";
     userNameenter.setAttribute("type", "text");
     userNameenter.setAttribute("value", quizStatus.enteredName);
     userNameform.appendChild(userNameenter);
