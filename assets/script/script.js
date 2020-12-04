@@ -79,7 +79,6 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
     showLastscores.innerText = "Click here to show High Scores"
     showLastscores.addEventListener("click", showHighscores);
 
-
     //set up canvas where game is played
     var quizCanvas = document.createElement("main");
     quizCanvas.id = "quiz-area";
@@ -91,6 +90,7 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
     var timerCounter = document.createElement("h2");
     timerCounter.id = "timer";
     quizCanvas.appendChild(timerCounter);
+
 
     //Questions are posted here
     var quizQuestion = document.createElement("p");
@@ -106,7 +106,6 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
         answerEl.className = "quiz-answer";
         quizCanvas.appendChild(answerEl);
         answerEl.textContent = quizQuestions[0].choices[i];
-
         //answer checker function applied here, checks relative based on ID of clicked p-tag, then references game-status for if answer is correct
         answerEl.addEventListener('click', answerClick);    
     }    
@@ -118,7 +117,7 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
     answerResult.style.textAlign = "center";
     answerResult.style.fontSize = "40px";
     answerResult.textContent = "Click HERE to start!";
-
+//Page set-up complete
 
 //pre-game count-down that shows the game-rules/concept to user.
 function preGame() {
@@ -150,7 +149,7 @@ function startTimer(){
     
     quizCanvas.removeEventListener("click", preGame);
     timerCounter.textContent = quizStatus.gameLength;
-    var counter = timerCounter.textContent;
+
     
     //reveal counter
     document.getElementById("timer").style = "color: black;" 
@@ -187,13 +186,12 @@ function startTimer(){
         }        
         
         //updates timer every tick
-        counter--;
-        timerCounter.textContent = counter;
+        timerCounter.textContent--;
 
         //end-game checkers here.
 
             //time-up event. If time ends (<1), trigger "game over" endgame.
-            if (counter < 1) {
+            if (timerCounter.textContent < 1) {
                 clearInterval(timerGame);
 
                 //update play area to show high scores and sad alerts
@@ -237,17 +235,17 @@ function startTimer(){
                 //update answers to high scores and create new local history
                 for (var i = 0; i < 4; i++) {                               
                     //check if new record
-                    if (counter > localHistory[i][1] && newRecord === 0) {
+                    if (timerCounter.textContent > localHistory[i][1] && newRecord === 0) {
                         //only prompts when a high score happens. Nice work!
                         var playerName = prompt("You got a high score! Please enter your name:")
                         answerResult.textContent = "You got a new record! Click HERE to play again!";   
                         answerEl = document.getElementById("answer-" + (i + 1));                 
-                        answerEl.textContent = quizQuestions[6].choices[i] + playerName + " " + counter;
+                        answerEl.textContent = quizQuestions[6].choices[i] + playerName + " " + timerCounter.textContent;
                         //here's that checker to stop this path from happening twice
                         newRecord++;
                         //logging new record into localHistory
                         localHistory[i][0] = playerName;
-                        localHistory[i][1] = counter;
+                        localHistory[i][1] = timerCounter.textContent;
                         answerEl.className = "quiz-answer quiz-answer-highscore";
 
                     } else {
