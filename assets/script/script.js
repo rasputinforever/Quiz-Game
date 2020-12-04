@@ -108,23 +108,8 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
         answerEl.textContent = quizQuestions[0].choices[i];
 
         //answer checker function applied here, checks relative based on ID of clicked p-tag, then references game-status for if answer is correct
-        answerEl.addEventListener('click', function () {            
-            
-            if (parseInt(this.id.charAt(this.id.length - 1)) === quizStatus.correctAnswer) {
-                this.className = "quiz-answer quiz-answer-correct";
-                answerResult.textContent = "Last Question: Correct!";
-            } else {
-                this.className = "quiz-answer quiz-answer-wrong";
-                answerResult.textContent = "Last Question: Wrong!";
-                timerCounter.textContent = timerCounter.textContent - quizStatus.timerPunishment;        
-            }            
-            //set game status to false, this triggers the next question to be asked on next timer iteration
-            quizStatus.questionAsked = false;
-            //update game status to next question for next iteration
-            quizStatus.questionNum++;
-            quizStatus.correctAnswer = quizQuestions[quizStatus.questionNum].answer;
-        });    
-    }
+        answerEl.addEventListener('click', answerClick);    
+    }    
 
     //creates status reproter area, just lets user know if the last question was correct or not
     var answerResult = document.createElement("p");
@@ -297,4 +282,20 @@ function showHighscores() {
         answerEl = document.getElementById("answer-" + (i + 1));
         answerEl.textContent = quizQuestions[6].choices[i] + localHistory[i][0] + " " + localHistory[i][1];
     }
+}
+
+function answerClick () {
+    if (parseInt(this.id.charAt(this.id.length - 1)) === quizStatus.correctAnswer) {
+        this.className = "quiz-answer quiz-answer-correct";
+        answerResult.textContent = "Last Question: Correct!";
+    } else {
+        this.className = "quiz-answer quiz-answer-wrong";
+        answerResult.textContent = "Last Question: Wrong!";
+        timerCounter.textContent = timerCounter.textContent - quizStatus.timerPunishment;        
+    }            
+    //set game status to false, this triggers the next question to be asked on next timer iteration
+    quizStatus.questionAsked = false;
+    //update game status to next question for next iteration
+    quizStatus.questionNum++;
+    quizStatus.correctAnswer = quizQuestions[quizStatus.questionNum].answer;
 }
