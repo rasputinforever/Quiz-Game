@@ -69,70 +69,77 @@ localHistory = JSON.parse(localStorage.getItem('localHistory'))
 //a copy used as reference when creating a new high-score table
 var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
 
+//on-load page set-up elements
 
+//show-last-score button
+var showLastscores = document.createElement("section")
+showLastscores.id = "last-score-button";
+document.body.appendChild(showLastscores);
+showLastscores.innerText = "Click here to show High Scores"
+showLastscores.addEventListener("click", showHighscores);
 
-//on-load page set-up
-    //show-last-score button
-    var showLastscores = document.createElement("section")
-    showLastscores.id = "last-score-button";
-    document.body.appendChild(showLastscores);
-    showLastscores.innerText = "Click here to show High Scores"
-    showLastscores.addEventListener("click", showHighscores);
+//set up canvas where game is played
+var quizCanvas = document.createElement("main");
+quizCanvas.id = "quiz-area";
+document.body.appendChild(quizCanvas);
+//"start game" added to play-area, will be killed at start of game, re-applied at end of game
+quizCanvas.addEventListener("click", preGame);
 
+//timer / score
+var timerCounter = document.createElement("h2");
+timerCounter.id = "timer";
+quizCanvas.appendChild(timerCounter);
 
-    //set up canvas where game is played
-    var quizCanvas = document.createElement("main");
-    quizCanvas.id = "quiz-area";
-    document.body.appendChild(quizCanvas);
-    //"start game" added to play-area, will be killed at start of game, re-applied at end of game
-    quizCanvas.addEventListener("click", preGame);
+//Questions are posted here
+var quizQuestion = document.createElement("p");
+quizQuestion.id = "quiz-question";
+quizCanvas.appendChild(quizQuestion);
+//initial "intro" text
+quizQuestion.textContent = quizQuestions[0].question;
 
-    //timer / score
-    var timerCounter = document.createElement("h2");
-    timerCounter.id = "timer";
-    quizCanvas.appendChild(timerCounter);
+//user input form, invisible until end-game
+var userNamefield = document.createElement("form");
+var userNamebutton = document.createElement("button");
+userNamefield.id = "user-name-form";
+userNamebutton.id = "user-name-button";
 
-    //Questions are posted here
-    var quizQuestion = document.createElement("p");
-    quizQuestion.id = "quiz-question";
-    quizCanvas.appendChild(quizQuestion);
-    //initial "intro" text
-    quizQuestion.textContent = quizQuestions[0].question;
+userNamebutton.innerText = "Submit Name";
+quizCanvas.appendChild(userNamefield);
+quizCanvas.appendChild(userNamebutton);
 
-    //creates answer p-tags
-    for (var i = 0; i < quizQuestions[0].choices.length; i++) {
-        var answerEl = document.createElement("p")
-        answerEl.id = "answer-" + (i + 1);
-        answerEl.className = "quiz-answer";
-        quizCanvas.appendChild(answerEl);
-        answerEl.textContent = quizQuestions[0].choices[i];
+//creates answer p-tags
+for (var i = 0; i < quizQuestions[0].choices.length; i++) {
+var answerEl = document.createElement("p")
+answerEl.id = "answer-" + (i + 1);
+answerEl.className = "quiz-answer";
+quizCanvas.appendChild(answerEl);
+answerEl.textContent = quizQuestions[0].choices[i];
+//answer checker function applied here, checks relative based on ID of clicked p-tag, then references game-status for if answer is correct
+answerEl.addEventListener('click', function () {            
+    
+    if (parseInt(this.id.charAt(this.id.length - 1)) === quizStatus.correctAnswer) {
+        this.className = "quiz-answer quiz-answer-correct";
+        answerResult.textContent = "Last Question: Correct!";
+    } else {
+        this.className = "quiz-answer quiz-answer-wrong";
+        answerResult.textContent = "Last Question: Wrong!";
+        timerCounter.textContent = timerCounter.textContent - quizStatus.timerPunishment;        
+    }            
+    //set game status to false, this triggers the next question to be asked on next timer iteration
+    quizStatus.questionAsked = false;
+    //update game status to next question for next iteration
+    quizStatus.questionNum++;
+    quizStatus.correctAnswer = quizQuestions[quizStatus.questionNum].answer;
+});    
+}
 
-        //answer checker function applied here, checks relative based on ID of clicked p-tag, then references game-status for if answer is correct
-        answerEl.addEventListener('click', function () {            
-            
-            if (parseInt(this.id.charAt(this.id.length - 1)) === quizStatus.correctAnswer) {
-                this.className = "quiz-answer quiz-answer-correct";
-                answerResult.textContent = "Last Question: Correct!";
-            } else {
-                this.className = "quiz-answer quiz-answer-wrong";
-                answerResult.textContent = "Last Question: Wrong!";
-                timerCounter.textContent = timerCounter.textContent - quizStatus.timerPunishment;        
-            }            
-            //set game status to false, this triggers the next question to be asked on next timer iteration
-            quizStatus.questionAsked = false;
-            //update game status to next question for next iteration
-            quizStatus.questionNum++;
-            quizStatus.correctAnswer = quizQuestions[quizStatus.questionNum].answer;
-        });    
-    }
-
-    //creates status reproter area, just lets user know if the last question was correct or not
-    var answerResult = document.createElement("p");
-    answerResult.id = "answer-result";
-    quizCanvas.appendChild(answerResult);
-    answerResult.style.textAlign = "center";
-    answerResult.style.fontSize = "40px";
-    answerResult.textContent = "Click HERE to start!";
+//creates status reproter area, just lets user know if the last question was correct or not
+var answerResult = document.createElement("p");
+answerResult.id = "answer-result";
+quizCanvas.appendChild(answerResult);
+answerResult.style.textAlign = "center";
+answerResult.style.fontSize = "40px";
+answerResult.textContent = "Click HERE to start!";
 
 
 //pre-game count-down that shows the game-rules/concept to user.
@@ -153,84 +160,80 @@ function preGame() {
         if (quizStatus.preGametimer === 1) {
             answerResult.textContent = "Now!";  
         } else if (quizStatus.preGametimer === 0) {
+            //game starts here
             clearInterval(preGame);        
-            startTimer();
+            initiateGame();
         }    
     }, 1000);
 };
 
-
-//quiz-game script defined here
-function startTimer(){
-    //set counter to start time main game
-    
+//quiz-game script set-up defined here
+function initiateGame(){
+    //set counter to start time main game    
     quizCanvas.removeEventListener("click", preGame);
     timerCounter.textContent = quizStatus.gameLength;
     var counter = timerCounter.textContent;
     
-    //reveal counter
+    //reveal counter and remove user message
     document.getElementById("timer").style = "color: black;" 
-
-    answerResult.textContent = "";
-    
+    answerResult.textContent = "";    
 
     //styling for alert
     answerResult.style.textAlign = "right";
     answerResult.style.fontSize = "20px";
-    answerResult.textContent = "";
-  
+    answerResult.textContent = "";  
 
+    //the actual game
+    questionAsked(counter);
+    gameStart(counter);
+};
+
+function gameStart(counter) {
     //this helps the game run and makes it able to STOP later... it had to be assigned to a function to do that. Hey, I don't ask questions, just trust me on this one.
     timerGame;
+
     //the active game is an interval, at each tick it checks game status to update itself or if the game is over. 
-    var timerGame = setInterval(function() {
-        
+    var timerGame = setInterval(function() {        
         //counter is both the time-left and eventual score. By taking from DOM each interval it was possible to use the DOM value in the functions when time is penalized. Essentially creates a linear path for this value rather than having concurrent values. I think that's what's happening, it seems to work.
-        counter = timerCounter.textContent;
-        
+        counter = timerCounter.textContent;        
         //this updates the question if the game-status is set to False (which occurs after user selects an answer)
-        if (!quizStatus.questionAsked) {
-            //this loop updates the question, so first thing: set "asked" = true, it's set to false when user clicks on answer
-            quizStatus.questionAsked = true;
-            //update question
-            quizQuestion.textContent = quizQuestions[quizStatus.questionNum].question;
-            //update answers, loop through array for each answer element. It's locked at 4 so this is not dynamic.
-            for (var i = 0; i < 4; i++) {
-                answerEl = document.getElementById("answer-" + (i + 1));
-                answerEl.textContent = quizQuestions[quizStatus.questionNum].choices[i];
-                answerEl.className = "quiz-answer";
-            };
-        }        
-        
+        questionAsked(counter);
         //updates timer every tick
         counter--;
         timerCounter.textContent = counter;
 
         //end-game checkers here.
-
             //time-up event. If time ends (<1), trigger "game over" endgame.
             if (counter < 1) {
-                clearInterval(timerGame);
-                
-                //lose end-game function
-                outOftime(counter);
-
-                
-            }
-
-            //quiz over condition: if all questions answered, trigger "success" endgame. counter must be > 0 to "win". 
-            if (quizStatus.questionNum > quizQuestions.length - 2) {
-                
-
                 //stops timer
                 clearInterval(timerGame);                
-                
+                //lose end-game function
+                outOftime(counter);                
+            }
+            //quiz over condition: if all questions answered, trigger "success" endgame. counter must be > 0 to "win". 
+            if (quizStatus.questionNum > quizQuestions.length - 2) {                
+                //stops timer
+                clearInterval(timerGame);                                
                 //high score function
-                highScore(counter);
-                
+                highScore(counter);                
             };
     }, 1000);
-};
+}
+
+function questionAsked(counter) {
+    if (!quizStatus.questionAsked) {
+        //this loop updates the question, so first thing: set "asked" = true, it's set to false when user clicks on answer
+        quizStatus.questionAsked = true;
+        //update question
+        quizQuestion.textContent = quizQuestions[quizStatus.questionNum].question;
+        //update answers, loop through array for each answer element. It's locked at 4 so this is not dynamic.
+        for (var i = 0; i < 4; i++) {
+            answerEl = document.getElementById("answer-" + (i + 1));
+            answerEl.textContent = quizQuestions[quizStatus.questionNum].choices[i];
+            answerEl.className = "quiz-answer";
+        };
+    }
+}
 
 //success end-game function if user gets a high score update answers to high scores and create new local history
 function highScore(counter) {
@@ -257,7 +260,6 @@ function highScore(counter) {
             localHistory[i][0] = playerName;
             localHistory[i][1] = counter;
             answerEl.className = "quiz-answer quiz-answer-highscore";
-
         } else {
             //oldLocalhistory used as "memory" as localHistory gets overwritten in if script
             answerEl = document.getElementById("answer-" + (i + 1));
@@ -279,18 +281,14 @@ function outOftime(){
     answerResult.style.fontSize = "40px";
     answerResult.textContent = "Click HERE to try again!";
     timerCounter.textContent = '';
-    //load any stored data
-    for (var i = 0; i < 4; i++) {                
-        answerEl = document.getElementById("answer-" + (i + 1));
-        answerEl.textContent = quizQuestions[6].choices[i] + localHistory[i][0] + " " + localHistory[i][1];
-    }
+    //load high scores
+    showHighscores();
     //reset game
     gameReset();
 };
 
 //set the game status back to default for next play
-function gameReset() {
-    
+function gameReset() {    
     quizCanvas.addEventListener("click", preGame);            
     quizStatus = {
         questionNum: 1,
