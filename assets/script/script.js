@@ -116,6 +116,22 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
     answerResult.style.textAlign = "center";
     answerResult.style.fontSize = "40px";
     answerResult.textContent = "Click HERE to start!";
+
+    //userform for name entry
+    var userNameform = document.createElement("FORM");
+    userNameform.id = "user-name-form";
+    quizCanvas.appendChild(userNameform);  
+    var userNameenter = document.createElement("INPUT");
+    userNameenter.setAttribute("type", "text");
+    userNameenter.setAttribute("value", quizStatus.enteredName);
+    userNameform.appendChild(userNameenter);
+
+    var userNamebutton = document.createElement("button");
+    userNamebutton.id = "user-name-button";
+    userNamebutton.innerText = "Submit"
+    quizCanvas.appendChild(userNamebutton);
+    userNamebutton.addEventListener("click", gameWin);
+
 //Page set-up complete
 
 //pre-game count-down that shows the game-rules/concept to user.
@@ -157,24 +173,23 @@ function preGame() {
 };
 
 function mainGame () {
+    //this variable makes it possible to use the clearInterval function
     timerGame;
 
     //the active game is an interval, at each tick it checks game status to update itself or if the game is over. 
     var timerGame = setInterval(function() {
-         
-        questionAsked();
-              
+        //quesiton updator
+        questionAsked();              
         
         //updates timer every tick
         timerCounter.textContent--;
 
         //end-game checkers here.
-
             //time-up event. If time ends (<1), trigger "game over" endgame.
             if (timerCounter.textContent < 1) {
                 gameLose(timerGame);
             } else if (quizStatus.questionNum > quizQuestions.length - 2) {
-                gameWin(timerGame);
+                getUsername(timerGame);
             };
     }, 1000);
 }
@@ -215,34 +230,51 @@ function gameLose(timerGame) {
     resetQuizStatus();
 };
 
-//game success
-function gameWin(timerGame) {    
-
-    //stops timer
+function getUsername(timerGame) {
+    //stops game, gets name of User
     clearInterval(timerGame);
+    for (var i = 0; i < 4; i++) {                
+        answerEl = document.getElementById("answer-" + (i + 1));
+        answerEl.style.visibility = "hidden";
+    }
+    quizQuestion.textContent = "You completed the quiz!"
+    answerResult.style.textAlign = "center";
+    answerResult.style.fontSize = "40px";
+    answerResult.textContent = "Please enter your name below!"     
+    userNameform.style.visibility = "visible";
+    userNamebutton.style.visibility = "visible";
+}
+
+//game success
+function gameWin() {
+    //hides user-form
+    userNameform.style.visibility = "hidden";
+    userNamebutton.style.visibility = "hidden";
+    console.log(userNameenter.value);
+    quizStatus.enteredName = userNameenter.value;
+
     //show user their score
-    timerCounter.textContent = "Final Score: " + timerCounter.textContent;
+    timerCounter.textContent = quizStatus.enteredName + "'s Final Score: " + timerCounter.textContent;
     //update status to show previous high-scores in next steps
     quizQuestion.textContent = quizQuestions[6].question;
     //game status alert update
-    answerResult.style.textAlign = "center";
-    answerResult.style.fontSize = "40px";
+
     answerResult.textContent = "The game is over! Click HERE to try again!";
     //this function is a little helper that allows the loop to account for a new high score. By referencing the localHistory and oldLocalhistory it can display the new records and log those records without deleting a record... if that makes sense. It also prevents the loop from creating duplicates of the high-record as a record > 3rd place would also be greater than 4th place, etc.
     var newRecord = 0;                
     //update answers to high scores and create new local history
-    for (var i = 0; i < 4; i++) {                               
+    for (var i = 0; i < 4; i++) {  
+        answerEl.style.visibility = "visible";                             
         //check if new record
         if (timerCounter.textContent > localHistory[i][1] && newRecord === 0) {
             //only prompts when a high score happens. Nice work!
-            var playerName = prompt("You got a high score! Please enter your name:")
             answerResult.textContent = "You got a new record! Click HERE to play again!";   
             answerEl = document.getElementById("answer-" + (i + 1));                 
-            answerEl.textContent = quizQuestions[6].choices[i] + playerName + " " + timerCounter.textContent;
+            answerEl.textContent = quizQuestions[6].choices[i] + quizStatus.enteredName + " " + timerCounter.textContent;
             //here's that checker to stop this path from happening twice
             newRecord++;
             //logging new record into localHistory
-            localHistory[i][0] = playerName;
+            localHistory[i][0] = quizStatus.enteredName;
             localHistory[i][1] = timerCounter.textContent;
             answerEl.className = "quiz-answer quiz-answer-highscore";
 
@@ -258,9 +290,11 @@ function gameWin(timerGame) {
     //save to local storage high scores                
     localStorage.setItem('localHistory', JSON.stringify(localHistory));
 
-    //re-assign StartTimer to canvas, reset defaults for next play
-    quizCanvas.addEventListener("click", preGame);
     resetQuizStatus();
+
+    // //re-assign StartTimer to canvas, reset defaults for next play
+     quizCanvas.addEventListener("click", preGame);
+
 };
 
 //loops through and shows the current high scores
@@ -274,12 +308,13 @@ function showHighscores() {
 //default settings reset
 function resetQuizStatus() {
     quizStatus =  {
-    questionNum: 1,
-    questionAsked: false,
-    correctAnswer: 1,
-    gameLength: 60,
-    timerPunishment: 10,
-    preGametimer: 5
+        questionNum: 1,
+        questionAsked: false,
+        correctAnswer: 1,
+        gameLength: 60,
+        timerPunishment: 10,
+        preGametimer: 5,
+        enteredName: 'your name here'
     }
 };
 
