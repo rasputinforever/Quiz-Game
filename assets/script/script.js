@@ -250,7 +250,6 @@ function gameWin() {
     //hides user-form
     userNameform.style.visibility = "hidden";
     userNamebutton.style.visibility = "hidden";
-    console.log(userNameenter.value);
     quizStatus.enteredName = userNameenter.value;
 
 
@@ -291,10 +290,9 @@ function gameWin() {
     //save to local storage high scores                
     localStorage.setItem('localHistory', JSON.stringify(localHistory));
 
+    document.getElementById("quiz-area").addEventListener("Click", preGame);
+    
     resetQuizStatus();
-
-    // //re-assign StartTimer to canvas, reset defaults for next play
-     // quizCanvas.addEventListener("click", preGame);
 
 };
 
@@ -317,6 +315,7 @@ function resetQuizStatus() {
         preGametimer: 5,
         enteredName: 'your name here'
     }
+
 };
 
 //checks if clicked answer is correct then sets up mainGame for next question
