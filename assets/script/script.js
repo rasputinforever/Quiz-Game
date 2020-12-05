@@ -37,19 +37,13 @@ var quizQuestions = [
     }
 ];
 
-
-
-//status keeper and rules for QUIZ game
-
+//status keeper and rules for QUIZ game (see functions list near bottom)
 var quizStatus = {};
-
+//this is used at end-of-game
 resetQuizStatus();
 
-
-
-//get item then check if null
+//get local history, then check if null (null=never played)
 var localHistory = JSON.parse(localStorage.getItem('localHistory'))
-
 //JSON Stringify to store un-set item, then get the item and un-stringify
 if (localHistory === null) {
     //default values if no local storage exists
@@ -62,13 +56,11 @@ if (localHistory === null) {
     ];
     localStorage.setItem('localHistory', JSON.stringify(localHistory));    
 } 
-
 localHistory = JSON.parse(localStorage.getItem('localHistory'))
-
-//a copy used as reference when creating a new high-score table
+//a copy used as reference when creating a new high-score table so it can write and refer to old scores simultaneously
 var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
 
-//on-load page set-up
+//on-load page element set-ups
     //show-last-score button
     var showLastscores = document.createElement("section")
     showLastscores.id = "last-score-button";
@@ -86,7 +78,6 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
     timerCounter.id = "timer";
     quizCanvas.appendChild(timerCounter);
 
-
     //Questions are posted here
     var quizQuestion = document.createElement("p");
     quizQuestion.id = "quiz-question";
@@ -94,14 +85,14 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
     //initial "intro" text
     quizQuestion.textContent = quizQuestions[0].question;
 
-    //creates answer p-tags
+    //creates answer p-tags where answers are shown
     for (var i = 0; i < quizQuestions[0].choices.length; i++) {
         var answerEl = document.createElement("p")
         answerEl.id = "answer-" + (i + 1);
         answerEl.className = "quiz-answer";
         quizCanvas.appendChild(answerEl);
         answerEl.textContent = quizQuestions[0].choices[i];
-        //answer checker function applied here, checks relative based on ID of clicked p-tag, then references game-status for if answer is correct
+        //onclicks applied that check if answer is correct then itterates to next quizStatus
         answerEl.addEventListener('click', answerClick);    
     }    
 
@@ -112,8 +103,9 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
     answerResult.style.textAlign = "center";
     answerResult.style.fontSize = "40px";
     answerResult.textContent = "";
-
     var startGamebutton = document.createElement("button");
+
+    //start-game button
     startGamebutton.id = "game-start-button";
     startGamebutton.innerText = "Begin Quiz";
     quizCanvas.appendChild(startGamebutton);
@@ -128,20 +120,21 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
     userNameenter.setAttribute("type", "text");
     userNameenter.setAttribute("value", quizStatus.enteredName);
     userNameform.appendChild(userNameenter);
-
     var userNamebutton = document.createElement("button");
     userNamebutton.id = "user-name-button";
     userNamebutton.innerText = "Submit"
     quizCanvas.appendChild(userNamebutton);
+    //user only sees this if they "win" game.
     userNamebutton.addEventListener("click", gameWin);
+//Page element set-up complete
 
-//Page set-up complete
+//functions for game
 
 //pre-game count-down that shows the game-rules/concept to user.
 function preGame() {
-    //hides game-starting button
+    //hides game-starting button and sets it up for end-game style
     startGamebutton.style.visibility = "hidden";
-    startGamebutton.id = "game-started-button";
+    startGamebutton.id = "game-started-button";    
     startGamebutton.innerText = "Click HERE to try again!"
     //shows user the game rules and sets the pre-game timer        
     answerResult.textContent = "You will have 60 seconds to answer all the questions in the quiz. The game will begin...";
@@ -152,43 +145,40 @@ function preGame() {
         answerEl.textContent = "";
     }
     //reveal counter
-    document.getElementById("timer").style = "color: black;"    
+    document.getElementById("timer").style = "color: black;"
+    //this is a var so that the interval can be stopped with clearInterval    
     var preGamegame = setInterval(function() {        
         quizStatus.preGametimer--;
         timerCounter.textContent = quizStatus.preGametimer;
         if (quizStatus.preGametimer === 1) {
             answerResult.textContent = "Now!";            
         }  else if (quizStatus.preGametimer < 1) {
+            //game is about to start
+            //stop pregame interval
             clearInterval(preGamegame);        
-            //styling for alert
+            //set answer result to in-game style
             answerResult.textContent = "";
             answerResult.style.textAlign = "right";
             answerResult.style.fontSize = "20px";
             answerResult.textContent = "";
-        
-
-            //this helps the game run and makes it able to STOP later... it had to be assigned to a function to do that. Hey, I don't ask questions, just trust me on this one.
-            
             //set counter to start time main game
             timerCounter.textContent = quizStatus.gameLength;
+            //set first question
             questionAsked()
+            //start game
             mainGame(); 
         }
     }, 1000);
 };
 
+//main game of page
 function mainGame () {
-    //this variable makes it possible to use the clearInterval function
-    timerGame;
-
-    //the active game is an interval, at each tick it checks game status to update itself or if the game is over. 
+    //each inteval checks game status to refresh question or if game is over.
     var timerGame = setInterval(function() {
         //quesiton updator
-        questionAsked();              
-        
+        questionAsked();
         //updates timer every tick
         timerCounter.textContent--;
-
         //end-game checkers here.
             //time-up event. If time ends (<1), trigger "game over" endgame.
             if (timerCounter.textContent < 1) {
@@ -218,7 +208,6 @@ function questionAsked() {
 function gameLose(timerGame) {
     //stops game
     clearInterval(timerGame);
-
     //update play area to show high scores and sad alerts
     quizQuestion.textContent = "You're out of time!"
     answerResult.style.textAlign = "center";
@@ -256,14 +245,11 @@ function gameWin() {
     userNameform.style.visibility = "hidden";
     userNamebutton.style.visibility = "hidden";
     quizStatus.enteredName = userNameenter.value;
-
-
     //update status to show previous high-scores in next steps
     quizQuestion.textContent = quizQuestions[6].question;
     //game status alert update
-
     answerResult.textContent = "The game is over!";
-    //this function is a little helper that allows the loop to account for a new high score. By referencing the localHistory and oldLocalhistory it can display the new records and log those records without deleting a record... if that makes sense. It also prevents the loop from creating duplicates of the high-record as a record > 3rd place would also be greater than 4th place, etc.
+    //this variable helps maintain continuity between the old records and new records. It also prevents first "if" to fire more than once.
     var newRecord = 0;                
     //update answers to high scores and create new local history
     for (var i = 0; i < 4; i++) {  
@@ -288,18 +274,15 @@ function gameWin() {
             localHistory[i][0] = oldLocalhistory[i - newRecord][0];
             localHistory[i][1] = oldLocalhistory[i - newRecord][1];
         }
-
     }
-        //show user their score
-        timerCounter.textContent = quizStatus.enteredName + "'s Final Score: " + timerCounter.textContent;
+    //show user their score
+    timerCounter.textContent = quizStatus.enteredName + "'s Final Score: " + timerCounter.textContent;
     //save to local storage high scores                
     localStorage.setItem('localHistory', JSON.stringify(localHistory));
-
-    document.getElementById("quiz-area").addEventListener("Click", preGame);
-    
+    //reset for next game
     resetQuizStatus();
-        //reveals game-starting button
-        startGamebutton.style.visibility = "visible";
+    //reveals game-starting button
+    startGamebutton.style.visibility = "visible";
 };
 
 //loops through and shows the current high scores
@@ -321,7 +304,6 @@ function resetQuizStatus() {
         preGametimer: 5,
         enteredName: 'your name here'
     }
-
 };
 
 //checks if clicked answer is correct then sets up mainGame for next question
