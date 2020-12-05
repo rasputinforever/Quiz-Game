@@ -57,6 +57,30 @@ body {
     color: white;
     background-color: red;
 }
+#game-started-button {
+    visibility: visible;
+    position: absolute;
+    bottom: 20px;
+    margin-left: auto;
+    margin-left: 20px;
+    width: 90%;
+    height: 70px;
+    font-size: 40px;
+    background-color: coral;
+    box-shadow: 5px 5px 5px black;
+}
+#game-start-button {
+    visibility: visible;
+    position: absolute;
+    bottom: 30%;
+    margin-left: auto;
+    margin-left: 20px;
+    width: 90%;
+    height: 200px;
+    font-size: 90px;
+    background-color: coral;
+    box-shadow: 5px 5px 5px black;
+}
 #user-name-button {
     visibility: hidden;   
     width: 300px; 

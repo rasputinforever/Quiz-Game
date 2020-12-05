@@ -80,8 +80,6 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
     var quizCanvas = document.createElement("main");
     quizCanvas.id = "quiz-area";
     document.body.appendChild(quizCanvas);
-    //"start game" added to play-area, will be killed at start of game, re-applied at end of game
-    quizCanvas.addEventListener("click", preGame);
 
     //timer / score
     var timerCounter = document.createElement("h2");
@@ -113,7 +111,13 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
     quizCanvas.appendChild(answerResult);
     answerResult.style.textAlign = "center";
     answerResult.style.fontSize = "40px";
-    answerResult.textContent = "Click HERE to start!";
+    answerResult.textContent = "";
+
+    var startGamebutton = document.createElement("button");
+    startGamebutton.id = "game-start-button";
+    startGamebutton.innerText = "Begin Quiz";
+    quizCanvas.appendChild(startGamebutton);
+    startGamebutton.addEventListener("click", preGame);
 
     //userform for name entry
     var userNameform = document.createElement("FORM");
@@ -135,8 +139,10 @@ var oldLocalhistory = JSON.parse(localStorage.getItem('localHistory'))
 
 //pre-game count-down that shows the game-rules/concept to user.
 function preGame() {
-    //removes event listener to avoid errors if user clicks again for some reason
-    quizCanvas.removeEventListener("click", preGame);
+    //hides game-starting button
+    startGamebutton.style.visibility = "hidden";
+    startGamebutton.id = "game-started-button";
+    startGamebutton.innerText = "Click HERE to try again!"
     //shows user the game rules and sets the pre-game timer        
     answerResult.textContent = "You will have 60 seconds to answer all the questions in the quiz. The game will begin...";
     timerCounter.textContent = quizStatus.preGametimer;
@@ -256,7 +262,7 @@ function gameWin() {
     quizQuestion.textContent = quizQuestions[6].question;
     //game status alert update
 
-    answerResult.textContent = "The game is over! Click HERE to try again!";
+    answerResult.textContent = "The game is over!";
     //this function is a little helper that allows the loop to account for a new high score. By referencing the localHistory and oldLocalhistory it can display the new records and log those records without deleting a record... if that makes sense. It also prevents the loop from creating duplicates of the high-record as a record > 3rd place would also be greater than 4th place, etc.
     var newRecord = 0;                
     //update answers to high scores and create new local history
@@ -292,7 +298,8 @@ function gameWin() {
     document.getElementById("quiz-area").addEventListener("Click", preGame);
     
     resetQuizStatus();
-
+        //reveals game-starting button
+        startGamebutton.style.visibility = "visible";
 };
 
 //loops through and shows the current high scores
