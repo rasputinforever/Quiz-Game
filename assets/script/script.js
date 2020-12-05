@@ -287,6 +287,7 @@ function gameWin() {
 
 //loops through and shows the current high scores
 function showHighscores() {
+    startGamebutton.id = "game-started-button";
     for (var i = 0; i < 4; i++) {                
         answerEl = document.getElementById("answer-" + (i + 1));
         answerEl.textContent = quizQuestions[6].choices[i] + localHistory[i][0] + " " + localHistory[i][1];
